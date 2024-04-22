@@ -8,16 +8,19 @@
     <link rel="stylesheet" href="stye.css">
 </head>
 <body class="center">
+    <p id="linha"></p>
     <p id="follow"></p>
     <section id="container" class="center">
-        <form method="POST" class="center">
+        <form id="formLogin" class="center" onsubmit="login(event)">
             <div>
                 <img src="./assets/roboRAS.min.png" alt="roboRAS">
             </div>
             <input type="text" name="usuario">
             <input type="text" name="senha">
-            <button>entrar</button>
+            <button type="submit">entrar</button>
         </form>
     </section>
+
+    <script src="script.js"></script>
 </body>
 </html>

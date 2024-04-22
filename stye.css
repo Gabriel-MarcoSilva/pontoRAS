@@ -20,12 +20,12 @@ body{
 #container {
     min-width: 260px;
     min-height: 310px;
-    width: 35%;
-    height: 80%;
+    width: 300px;
+    height: 500px;
     max-width: 500px;
     max-height: 800px;
     background-color: #000;
-    border: 20px solid #fff;
+    border: 25px solid #fff;
     border-radius: 20px;
 }
 
@@ -49,33 +49,75 @@ button{
 #follow {
     width: 40px;
     height: 40px;
-    background-color: red;
-    position: absolute;
-    animation: follow 8s infinite;
+    background-image: url('assets/formula.png');
+    background-size: contain;
+    position: relative;
+    margin-bottom: -35px;
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+    z-index: 2;
+    animation: follow 5s infinite;
+}
+
+#linha{
+    width: 10px;
+    height: 25px;
+    background-color: #000;
+    position: relative;
+    margin-bottom: -30px;
+}
+
+#linha::before, #linha::after{
+    margin-top: 3px;
+    display: flex;
+    content: '';
+    width: 10px;
+    height: 6px;
+    background-color: #fff;
+}
+
+#linha::after{
+    margin-top: 7px;
 }
 
 @keyframes follow {
     0%{
-        transform: translate(0);
+        transform: translate(0) rotate(180deg);
     }
+
     20%{
-        transform: translateY(200px);
+        transform: translate(-130px, 0) rotate(180deg);
     }
-    
+
+    28%{
+        transform: translate(-135px, 0) rotate(90deg);
+    }
+
     40%{
-        transform: translateX(-100px);
+        transform: translate(-135px, 465px) rotate(90deg);
+    }
+
+    45%{
+        transform: translate(-135px, 475px);
+    }
+
+    58%{
+        transform: translate(135px, 475px);
     }
 
     60% {
-        transform: translateY(-200px);
+        transform: translate(135px, 475px) rotate(-90deg);
+    }
+
+    78%{
+        transform: translate(135px, 5px) rotate(-90deg);
     }
 
     80%{
-        transform: translateX(100px);
+        transform: translate(135px, 0) rotate(180deg);
     }
 
     100%{
-        transform: translate(0);
+        transform: translate(0)  rotate(180deg);
     }
 
 }
