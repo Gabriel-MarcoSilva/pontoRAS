@@ -26,7 +26,7 @@ function login(e) {
             document.getElementById('login').style.display = 'none'
         })
         .catch((err) => {
-            alert('houve um erro, tente novamente mais tarde')
+            alert('ocorreu um erro, tente novamente mais tarde')
         })
 }
 
@@ -70,7 +70,7 @@ function registroData(e, props, acao) {
                 document.getElementById("hora").value = ''
                 document.getElementById('regAuto').style.display = 'flex'
                 document.getElementById('formDasDatas').style.display = 'none'
-                document.getElementById('botoesReg').style.display = 'block'
+                document.getElementById('botoesReg').style.display = 'flex'
             })
             .catch(() => {
                 alert('houve um erro, tene novamente mais tarde')
@@ -87,7 +87,7 @@ function revelarForm(props) {
     } else {
         document.getElementById('formDasDatas').style.display = 'none'
         document.getElementById('regAuto').style.display = 'flex'
-        document.getElementById('botoesReg').style.display = 'block'
+        document.getElementById('botoesReg').style.display = 'flex'
     }
 }
 
