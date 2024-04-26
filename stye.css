@@ -89,11 +89,12 @@ button{
     border-radius: 5px;
 }
 
-#calendario{
-    height: 150px;
-    width: 150px;
+#container-calendario{
+    height: 280px;
+    width: 280px;
     border: 2px solid #fff;
 }
+
 .center span{
     margin-bottom: 20px;
 }
@@ -102,6 +103,59 @@ button{
     margin: 10px 20px;
 }
 
+.fds{
+    background-color: green;
+}
+
+th, td{
+    text-align: center;
+    border: 1px solid #fff;
+}
+
+th{
+    background-color: rgb(104, 0, 0);
+    color: #fff;
+    padding: 2px;
+}
+
+.today {
+    background-color: purple;
+}
+
+#info {
+    position: absolute;
+    width: 200px;
+    height: auto;
+    border: 1px solid #fff;
+    margin-left: 25vh;
+    margin-top: -21vh;
+    text-align: justify;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: rgba(0,0,0,0.5);
+}
+
+#lampada{
+    animation: lampada 2s infinite;
+}
+
+#regAuto {
+    height: 20vh;
+    margin-bottom: 20px;
+}
+
+#formData label {
+    display: flex;
+    flex-direction: column;
+}
+#formData label span{
+    margin-bottom: 0;
+    text-align: center;
+}
+
+.container-botoes{
+    display: flex;
+}
 @keyframes follow {
     0%{
         transform: translate(0) rotate(180deg);
@@ -143,6 +197,20 @@ button{
         transform: translate(0)  rotate(180deg);
     }
 
+}
+
+@keyframes lampada {
+    0%{
+        transform: scale(0.8);
+    }
+
+    50% {
+        transform: scale(1.0);
+    }
+
+    100%{
+        transform: scale(0.8);
+    }
 }
 
 @media (max-width: 425px) {

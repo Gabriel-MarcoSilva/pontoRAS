@@ -19,44 +19,71 @@
                     <img src="./assets/roboRAS.min.png" alt="roboRAS">
                 </div>
                 <input type="text" name="usuario">
-                <input type="text" name="senha">
+                <input type="password" name="senha">
                 <button type="submit">entrar</button>
             </form>
         </section>
     </section>
 
     <section id="dashboard" class="center" style="display: none;">
-        <section id="calendario" class="center">Calendário</section>
+        <section id="container-calendario" class="center">
+            <section id="calendario">
+
+            </section>
+        </section>
         <section class="center" id="regAuto">
-            <span>registro automático</span>
-            <button onclick="registroData(event, 'auto')">Automático</button>
+            <section style="display: flex; align-items: baseline;">
+                <span>Registro Automático</span>
+                <div id="lampada">
+                    <span onclick="informa(true)">💡</span>
+                </div>
+            </section>
+            <div style="display: none;" onclick="informa(false)" id="info">
+                Registra automaticamente sua entrada ou saída
+                <br />
+                <br />
+                Utilize quando você chegar ou sair do laboratório
+            </div>
+            <div class="container-botoes">
+                <button onclick="registroData(event, 'auto', 'entrada')">Entrada</button>
+                <button onclick="registroData(event, 'auto', 'saida')">Saída</button>
+            </div>
         </section>
         <section class="center">
-
             <section id="formDasDatas" style="display: none;">
-                <form action="" id="formData" onsubmit="registroData(event, 'escolha')"  class="center">
+                <form action="" id="formData" onsubmit="registroData(event, 'escolha', '')" class="center">
+                    <p onclick="revelarForm(2)"
+                        style=" cursor: pointer; position: relative; height: 5px; width: 100%; font-size:20pt ; text-align:end;">
+                        x</p>
                     <label for="date">
                         <span>Informe a data</span>
-                        <input type="date" name="date" id="data" >
+                        <input type="date" name="dia" id="data">
+                    </label>
+                    <label for="funcao">
+                        <input type="hidden" name="periodo" id="periodo">
                     </label>
                     <label for="horario">
                         <span>Informe a hora</span>
-                        <input type="time" name="horario" id="hora" />
+                        <input type="time" name="hora" id="hora" />
                     </label>
-                    <button type="submit"></button>
+                    <button type="submit">Enviar</button>
                 </form>
             </section>
 
-            <span>Veio outro horário? </span>
-            <div>
-                <button type="button" onclick="revelarForm()">Entrada</button>
-            </div>
-            <div>
-                <button type="button" onclick="revelarForm()">Saída</button>
-            </div>
+            <section id="botoesReg" style="
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;">
+                <span style="text-align: center;">Esqueceu de registrar? </span>
+                <div class="container-botoes">
+                    <button type="button" onclick="revelarForm(1)">Entrada</button>
+                    <button type="button" onclick="revelarForm(0)">Saída</button>
+                </div>
+            </section>
         </section>
     </section>
 
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="script.js"></script>
 </body>
 
