@@ -1,5 +1,3 @@
-
-// form.addEventListener('submit', )
 calendario()
 
 const API = axios.create(
@@ -13,12 +11,16 @@ let funcao = ''
 
 function login(e) {
     const form = document.getElementById('formLogin')
-    // se login então document.getelement = display none
 
     e.preventDefault()
     const data = new FormData(form)
 
-    const payload = new URLSearchParams(data)
+    const dados = new URLSearchParams(data)
+
+    const payload = {
+        user: [...dados.values()][0],
+        password: [...dados.values()][1],
+    }
 
     API.post('/login', payload)
         .then((res) => {
@@ -34,14 +36,14 @@ function registroData(e, props, acao) {
 
     e.preventDefault()
     let data = ''
-    let payload = null
+    let dados = null
 
     const form = document.getElementById('formData')
 
     if (props === 'auto') {
         data = new Date()
 
-        payload = new URLSearchParams({
+        dados = new URLSearchParams({
             dia: data.getDate() + '-' + 0 + Number(data.getMonth() + 1) + '-' + data.getFullYear(),
             periodo: acao,
             hora: data.getHours() + ':' + data.getMinutes()
@@ -49,16 +51,22 @@ function registroData(e, props, acao) {
     } else {
         document.getElementById("periodo").value = funcao == 1 ? 'entrada' : 'saida'
         data = new FormData(form)
-        payload = new URLSearchParams(data)
+        dados = new URLSearchParams(data)
     }
 
     let info = false;
-
-    [...payload.values()].map((item) => {
+    
+    [...dados.values()].map((item) => {
         if (item == '') {
             info = true
         }
     })
+
+    const payload = {
+        data: [...dados.values()][0],
+        hora: [...dados.values()][2],
+        periodo: [...dados.values()][1]
+    }
 
     if (info) {
         alert('Dados incompletos')
