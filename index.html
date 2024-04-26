@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,20 +8,56 @@
 
     <link rel="stylesheet" href="stye.css">
 </head>
+
 <body class="center">
-    <p id="linha"></p>
-    <p id="follow"></p>
-    <section id="container" class="center">
-        <form id="formLogin" class="center" onsubmit="login(event)">
+    <section class="center" id="login">
+        <p id="linha"></p>
+        <p id="follow"></p>
+        <section id="container" class="center">
+            <form id="formLogin" class="center" onsubmit="login(event)">
+                <div>
+                    <img src="./assets/roboRAS.min.png" alt="roboRAS">
+                </div>
+                <input type="text" name="usuario">
+                <input type="text" name="senha">
+                <button type="submit">entrar</button>
+            </form>
+        </section>
+    </section>
+
+    <section id="dashboard" class="center" style="display: none;">
+        <section id="calendario" class="center">Calendário</section>
+        <section class="center" id="regAuto">
+            <span>registro automático</span>
+            <button onclick="registroData(event, 'auto')">Automático</button>
+        </section>
+        <section class="center">
+
+            <section id="formDasDatas" style="display: none;">
+                <form action="" id="formData" onsubmit="registroData(event, 'escolha')"  class="center">
+                    <label for="date">
+                        <span>Informe a data</span>
+                        <input type="date" name="date" id="data" >
+                    </label>
+                    <label for="horario">
+                        <span>Informe a hora</span>
+                        <input type="time" name="horario" id="hora" />
+                    </label>
+                    <button type="submit"></button>
+                </form>
+            </section>
+
+            <span>Veio outro horário? </span>
             <div>
-                <img src="./assets/roboRAS.min.png" alt="roboRAS">
+                <button type="button" onclick="revelarForm()">Entrada</button>
             </div>
-            <input type="text" name="usuario">
-            <input type="text" name="senha">
-            <button type="submit">entrar</button>
-        </form>
+            <div>
+                <button type="button" onclick="revelarForm()">Saída</button>
+            </div>
+        </section>
     </section>
 
     <script src="script.js"></script>
 </body>
+
 </html>
