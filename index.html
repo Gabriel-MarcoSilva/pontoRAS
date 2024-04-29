@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="stye.css">
 </head>
 
-<body class="center">
+<body class="center" onload="loading()">
     <section class="center" id="login">
         <p id="linha"></p>
         <p id="follow"></p>
@@ -26,6 +26,9 @@
     </section>
 
     <section id="dashboard" class="center" style="display: none;">
+        <p onclick="logout()"
+            style=" cursor: pointer; position: relative; height: 5px; width: 100%; font-size:20pt; text-align:end;">
+            🔚</p>
         <section id="container-calendario" class="center">
             <section id="calendario">
 

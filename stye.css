@@ -212,10 +212,3 @@ th{
         transform: scale(0.8);
     }
 }
-
-@media (max-width: 425px) {
-    #container{
-        height: 50%;
-        width: 30%;
-    }
-}

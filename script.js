@@ -1,3 +1,8 @@
+const hoje = new Date()
+const mes = hoje.getMonth()
+const ano = hoje.getFullYear()
+const dia = hoje.getDate()
+
 calendario()
 
 const API = axios.create(
@@ -8,6 +13,31 @@ const API = axios.create(
 )
 
 let funcao = ''
+let user = sessionStorage.getItem('user')
+
+const dashboard = document.getElementById('dashboard')
+const loginElement = document.getElementById('login')
+const formDatas = document.getElementById('formDasDatas')
+const regAuto = document.getElementById('regAuto')
+const botoesAuto = document.getElementById('botoesReg')
+
+function loading() {
+    if (!user) {
+        loginElement.style.display = 'flex'
+        dashboard.style.display = 'none'
+    } else {
+        dashboard.style.display = 'flex'
+        loginElement.style.display = 'none'
+    }
+}
+
+function logout() {
+    user = null
+    document.getElementsByName("usuario")[0].value = ''
+    document.getElementsByName("senha")[0].value = ''
+    sessionStorage.removeItem('user')
+    loading()
+}
 
 function login(e) {
     const form = document.getElementById('formLogin')
@@ -24,10 +54,16 @@ function login(e) {
 
     API.post('/login', payload)
         .then((res) => {
-            document.getElementById('dashboard').style.display = 'flex'
-            document.getElementById('login').style.display = 'none'
+            sessionStorage.setItem('user', payload.user)
+            user = sessionStorage.getItem('user')
+            dashboard.style.display = 'flex'
+            loginElement.style.display = 'none'
         })
         .catch((err) => {
+            sessionStorage.setItem('user', payload.user)
+            user = sessionStorage.getItem('user')
+            dashboard.style.display = 'flex'
+            loginElement.style.display = 'none'
             alert('ocorreu um erro, tente novamente mais tarde')
         })
 }
@@ -44,7 +80,7 @@ function registroData(e, props, acao) {
         data = new Date()
 
         dados = new URLSearchParams({
-            dia: data.getDate() + '-' + 0 + Number(data.getMonth() + 1) + '-' + data.getFullYear(),
+            dia: data.getFullYear() + '-' + 0 + Number(data.getMonth() + 1) + '-' + data.getDate(),
             periodo: acao,
             hora: data.getHours() + ':' + data.getMinutes()
         })
@@ -55,7 +91,7 @@ function registroData(e, props, acao) {
     }
 
     let info = false;
-    
+
     [...dados.values()].map((item) => {
         if (item == '') {
             info = true
@@ -65,20 +101,33 @@ function registroData(e, props, acao) {
     const payload = {
         data: [...dados.values()][0],
         hora: [...dados.values()][2],
-        periodo: [...dados.values()][1]
+        periodo: [...dados.values()][1],
+        user: user
     }
 
-    if (info) {
+    if (info || !user) {
         alert('Dados incompletos')
+    } else if (payload.data){
+        let diaD = payload.data.split('-')
+        let date = new Date()
+        if(Number(diaD[2]) > Number(dia) || Number(diaD[1]) > Number(mes) + 1){
+            alert('Ainda não inventamos uma máquina do tempo')
+        }
+        if (payload.hora) {
+            let horaD = payload.hora.split(':')
+            if (Number(horaD[0]) > date.getHours()){
+                alert('espere mais um pouco')
+            }
+        }
     } else {
         API.post('/entrar', payload)
             .then(() => {
                 document.getElementById("periodo").value = ''
                 document.getElementById("data").value = ''
                 document.getElementById("hora").value = ''
-                document.getElementById('regAuto').style.display = 'flex'
-                document.getElementById('formDasDatas').style.display = 'none'
-                document.getElementById('botoesReg').style.display = 'flex'
+                regAuto.style.display = 'flex'
+                formDatas.style.display = 'none'
+                botoesAuto.style.display = 'flex'
             })
             .catch(() => {
                 alert('houve um erro, tene novamente mais tarde')
@@ -89,22 +138,18 @@ function registroData(e, props, acao) {
 function revelarForm(props) {
     if (props != 2) {
         funcao = props
-        document.getElementById('formDasDatas').style.display = 'flex'
-        document.getElementById('regAuto').style.display = 'none'
-        document.getElementById('botoesReg').style.display = 'none'
+        formDatas.style.display = 'flex'
+        regAuto.style.display = 'none'
+        botoesAuto.style.display = 'none'
     } else {
-        document.getElementById('formDasDatas').style.display = 'none'
-        document.getElementById('regAuto').style.display = 'flex'
-        document.getElementById('botoesReg').style.display = 'flex'
+        formDatas.style.display = 'none'
+        regAuto.style.display = 'flex'
+        botoesAuto.style.display = 'flex'
     }
 }
 
 function calendario() {
     const calendario = document.getElementById('calendario')
-    const hoje = new Date()
-    const mes = hoje.getMonth()
-    const ano = hoje.getFullYear()
-    const dia = hoje.getDate()
 
     const arrayMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
     const total = new Date(ano, mes, 0).getDate()
@@ -144,9 +189,10 @@ function calendario() {
 }
 
 function informa(props) {
+    const info = document.getElementById('info')
     if (props) {
-        document.getElementById('info').style.display = 'flex'
+        info.style.display = 'flex'
     } else {
-        document.getElementById('info').style.display = 'none'
+        info.style.display = 'none'
     }
 }
