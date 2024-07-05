@@ -3,7 +3,10 @@ const mes = hoje.getMonth()
 const ano = hoje.getFullYear()
 const dia = hoje.getDate()
 
+let isInLab = false;
+
 calendario()
+getLocation()
 
 const API = axios.create(
     {
@@ -58,38 +61,33 @@ function login(e) {
             user = sessionStorage.getItem('user')
             dashboard.style.display = 'flex'
             loginElement.style.display = 'none'
+            registroData('entrada')
         })
         .catch((err) => {
             sessionStorage.setItem('user', payload.user)
             user = sessionStorage.getItem('user')
             dashboard.style.display = 'flex'
             loginElement.style.display = 'none'
+            registroData('entrada')
             alert('ocorreu um erro, tente novamente mais tarde')
         })
 }
 
-function registroData(e, props, acao) {
+function registroData(acao) {
 
-    e.preventDefault()
     let data = ''
     let dados = null
 
     const form = document.getElementById('formData')
 
-    if (props === 'auto') {
-        data = new Date()
+    data = new Date()
 
-        dados = new URLSearchParams({
-            dia: data.getFullYear() + '-' + 0 + Number(data.getMonth() + 1) + '-' + data.getDate(),
-            periodo: acao,
-            hora: data.getHours() + ':' + data.getMinutes()
-        })
-    } else {
-        document.getElementById("periodo").value = funcao == 1 ? 'entrada' : 'saida'
-        data = new FormData(form)
-        dados = new URLSearchParams(data)
-    }
-
+    dados = new URLSearchParams({
+        dia: data.getFullYear() + '-' + 0 + Number(data.getMonth() + 1) + '-' + data.getDate(),
+        periodo: acao,
+        hora: data.getHours() + ':' + data.getMinutes()
+    })
+    
     let info = false;
 
     [...dados.values()].map((item) => {
@@ -105,46 +103,22 @@ function registroData(e, props, acao) {
         user: user
     }
 
-    if (info || !user) {
+    console.log(payload)
+
+    if (info || !user || !isInLab) {
         alert('Dados incompletos')
-    } else if (payload.data){
-        let diaD = payload.data.split('-')
-        let date = new Date()
-        if(Number(diaD[2]) > Number(dia) || Number(diaD[1]) > Number(mes) + 1){
-            alert('Ainda não inventamos uma máquina do tempo')
-        }
-        if (payload.hora) {
-            let horaD = payload.hora.split(':')
-            if (Number(horaD[0]) > date.getHours()){
-                alert('espere mais um pouco')
-            }
-        }
     } else {
-        API.post('/entrar', payload)
+        try {
+            API.post('/entrar', payload)
             .then(() => {
-                document.getElementById("periodo").value = ''
-                document.getElementById("data").value = ''
-                document.getElementById("hora").value = ''
-                regAuto.style.display = 'flex'
-                formDatas.style.display = 'none'
-                botoesAuto.style.display = 'flex'
+                alert('data cadastrada com sucesso')
             })
             .catch(() => {
                 alert('houve um erro, tene novamente mais tarde')
             })
-    }
-}
-
-function revelarForm(props) {
-    if (props != 2) {
-        funcao = props
-        formDatas.style.display = 'flex'
-        regAuto.style.display = 'none'
-        botoesAuto.style.display = 'none'
-    } else {
-        formDatas.style.display = 'none'
-        regAuto.style.display = 'flex'
-        botoesAuto.style.display = 'flex'
+        } catch (error) {
+            console.log('error')
+        }
     }
 }
 
@@ -194,5 +168,41 @@ function informa(props) {
         info.style.display = 'flex'
     } else {
         info.style.display = 'none'
+    }
+}
+
+
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    }
+}
+
+function showPosition(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    if (latitude !== -12.657904 && longitude !== -39.093855) {
+        isInLab = false;
+        alert('você não está no C11')
+    } else {
+        isInLab = true;
+    }
+}
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            console.log("Usuário negou a solicitação de Geolocalização.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            console.log("Informação de localização não está disponível.");
+            break;
+        case error.TIMEOUT:
+            console.log("A solicitação para obter a localização expirou.");
+            break;
+        case error.UNKNOWN_ERROR:
+            console.log("Ocorreu um erro desconhecido.");
+            break;
     }
 }

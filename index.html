@@ -47,42 +47,11 @@
                 <br />
                 Utilize quando você chegar ou sair do laboratório
             </div>
+            <p id="location"></p>
             <div class="container-botoes">
-                <button onclick="registroData(event, 'auto', 'entrada')">Entrada</button>
-                <button onclick="registroData(event, 'auto', 'saida')">Saída</button>
+                <button onclick="registroData(event, 'entrada')">Entrada</button>
+                <button onclick="registroData(event, 'saida')">Saída</button>
             </div>
-        </section>
-        <section class="center">
-            <section id="formDasDatas" style="display: none;">
-                <form action="" id="formData" onsubmit="registroData(event, 'escolha', '')" class="center">
-                    <p onclick="revelarForm(2)"
-                        style=" cursor: pointer; position: relative; height: 5px; width: 100%; font-size:20pt ; text-align:end;">
-                        x</p>
-                    <label for="date">
-                        <span>Informe a data</span>
-                        <input type="date" name="dia" id="data">
-                    </label>
-                    <label for="funcao">
-                        <input type="hidden" name="periodo" id="periodo">
-                    </label>
-                    <label for="horario">
-                        <span>Informe a hora</span>
-                        <input type="time" name="hora" id="hora" />
-                    </label>
-                    <button type="submit">Enviar</button>
-                </form>
-            </section>
-
-            <section id="botoesReg" style="
-                    width: 100%;
-                    display: flex;
-                    flex-direction: column;">
-                <span style="text-align: center;">Esqueceu de registrar? </span>
-                <div class="container-botoes">
-                    <button type="button" onclick="revelarForm(1)">Entrada</button>
-                    <button type="button" onclick="revelarForm(0)">Saída</button>
-                </div>
-            </section>
         </section>
     </section>
 
