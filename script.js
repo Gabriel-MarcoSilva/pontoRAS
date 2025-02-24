@@ -1,45 +1,21 @@
-const hoje = new Date()
-const mes = hoje.getMonth()
-const ano = hoje.getFullYear()
-const dia = hoje.getDate()
-
-calendario()
+let auxAlert = false
 
 const API = axios.create(
     {
-        baseURL: '',
+        baseURL: 'https://rrasponto.onrender.com',
         headers: { 'Content-Type': 'application/json' }
     }
 )
 
-let funcao = ''
-let user = sessionStorage.getItem('user')
-
-const dashboard = document.getElementById('dashboard')
-const loginElement = document.getElementById('login')
-const formDatas = document.getElementById('formDasDatas')
-const regAuto = document.getElementById('regAuto')
-const botoesAuto = document.getElementById('botoesReg')
-
 function loading() {
-    if (!user) {
-        loginElement.style.display = 'flex'
-        dashboard.style.display = 'none'
-    } else {
-        dashboard.style.display = 'flex'
-        loginElement.style.display = 'none'
-    }
+    API.get('/').then(res => {
+        console.log(res.data)
+    })
+    document.getElementById('formLogin').reset()
+    document.getElementById('formCadastro').reset()
 }
 
-function logout() {
-    user = null
-    document.getElementsByName("usuario")[0].value = ''
-    document.getElementsByName("senha")[0].value = ''
-    sessionStorage.removeItem('user')
-    loading()
-}
-
-function login(e) {
+function login (e) {
     const form = document.getElementById('formLogin')
 
     e.preventDefault()
@@ -48,151 +24,84 @@ function login(e) {
     const dados = new URLSearchParams(data)
 
     const payload = {
-        user: [...dados.values()][0],
-        password: [...dados.values()][1],
+        matricula: [...dados.values()][0],
+        senha: [...dados.values()][1],
     }
 
-    API.post('/login', payload)
-        .then((res) => {
-            sessionStorage.setItem('user', payload.user)
-            user = sessionStorage.getItem('user')
-            dashboard.style.display = 'flex'
-            loginElement.style.display = 'none'
-        })
-        .catch((err) => {
-            sessionStorage.setItem('user', payload.user)
-            user = sessionStorage.getItem('user')
-            dashboard.style.display = 'flex'
-            loginElement.style.display = 'none'
-            alert('ocorreu um erro, tente novamente mais tarde')
-        })
+    API.post('/login', payload).then((res) =>{
+        console.log('log in')
+        console.log(res.data)
+
+        sessionStorage.setItem('token', res.data.accessToken)
+
+        const horarioMarcado = sessionStorage.getItem('timeInit')
+
+        if (horarioMarcado !== null || horarioMarcado !== undefined) {
+            const hour = new Date()
+            sessionStorage.setItem('timeInit', (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0'+hour.getSeconds() : hour.getSeconds()))
+        }
+        window.location.href = "./dashboard/index.html";
+    }).catch((err) => {
+        alertCustomized('Matrícula e/ou senha incorretas', '20vw')
+        console.log(err)
+    })
 }
 
-function registroData(e, props, acao) {
+function cadastro (e) {
+    const form = document.getElementById('formCadastro')
 
     e.preventDefault()
-    let data = ''
-    let dados = null
+    const data = new FormData(form)
 
-    const form = document.getElementById('formData')
-
-    if (props === 'auto') {
-        data = new Date()
-
-        dados = new URLSearchParams({
-            dia: data.getFullYear() + '-' + 0 + Number(data.getMonth() + 1) + '-' + data.getDate(),
-            periodo: acao,
-            hora: data.getHours() + ':' + data.getMinutes()
-        })
-    } else {
-        document.getElementById("periodo").value = funcao == 1 ? 'entrada' : 'saida'
-        data = new FormData(form)
-        dados = new URLSearchParams(data)
-    }
-
-    let info = false;
-
-    [...dados.values()].map((item) => {
-        if (item == '') {
-            info = true
-        }
-    })
+    const dados = new URLSearchParams(data)
 
     const payload = {
-        data: [...dados.values()][0],
-        hora: [...dados.values()][2],
-        periodo: [...dados.values()][1],
-        user: user
+        nome: [...dados.values()][0],
+        telefone: [...dados.values()][1],
+        matricula: [...dados.values()][2],
+        curso: [...dados.values()][3],
+        email: [...dados.values()][4],
+        senha: [...dados.values()][5]
     }
 
-    if (info || !user) {
-        alert('Dados incompletos')
-    } else if (payload.data){
-        let diaD = payload.data.split('-')
-        let date = new Date()
-        if(Number(diaD[2]) > Number(dia) || Number(diaD[1]) > Number(mes) + 1){
-            alert('Ainda não inventamos uma máquina do tempo')
-        }
-        if (payload.hora) {
-            let horaD = payload.hora.split(':')
-            if (Number(horaD[0]) > date.getHours()){
-                alert('espere mais um pouco')
-            }
-        }
+    API.post('/usuario', payload).then(res => {
+        console.log('Cadastrado com sucesso')
+        newCad()
+    }).catch(err => {
+        console.log(err)
+    })
+}
+
+function newCad() {
+    if (document.getElementById('cadastro').style.display == 'flex') {
+        document.getElementById('login').style.display = 'flex'
+        document.getElementById('cadastro').style.display = 'none'
+        document.getElementById('formLogin').reset()
+
     } else {
-        API.post('/entrar', payload)
-            .then(() => {
-                document.getElementById("periodo").value = ''
-                document.getElementById("data").value = ''
-                document.getElementById("hora").value = ''
-                regAuto.style.display = 'flex'
-                formDatas.style.display = 'none'
-                botoesAuto.style.display = 'flex'
-            })
-            .catch(() => {
-                alert('houve um erro, tene novamente mais tarde')
-            })
+        document.getElementById('login').style.display = 'none'
+        document.getElementById('cadastro').style.display = 'flex'
+        document.getElementById('formCadastro').reset()
     }
 }
 
-function revelarForm(props) {
-    if (props != 2) {
-        funcao = props
-        formDatas.style.display = 'flex'
-        regAuto.style.display = 'none'
-        botoesAuto.style.display = 'none'
-    } else {
-        formDatas.style.display = 'none'
-        regAuto.style.display = 'flex'
-        botoesAuto.style.display = 'flex'
-    }
+function alertCustomized(message, size) {
+    const alert = document.getElementById('alert')
+    alert.innerHTML = ""; // Limpa antes de renderizar
+
+    alert.style.display = 'flex'
+    alert.style.width = size
+
+    const p = document.createElement("p")
+    p.classList.add("messageAlert")
+    p.innerHTML = message
+    alert.appendChild(p)
+
+    setInterval(() => {
+        alert.style.display = 'none'
+    }, 7000);
 }
 
-function calendario() {
-    const calendario = document.getElementById('calendario')
-
-    const arrayMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
-    const total = new Date(ano, mes, 0).getDate()
-    const primeiroDia = new Date(ano, mes, 1).getDay()
-
-    let html = `<h2 id="mes-ano">${arrayMeses[mes]} ${ano}</h2>`
-
-    html += "<table><tr><th>Dom</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sáb</th></tr>"
-
-    let day = 1
-    for (let i = 0; i < 6; i++) {
-        html += '<tr>'
-        for (let j = 0; j < 7; j++) {
-            if (i === 0 && j < primeiroDia) {
-                html += '<td></td>'
-            } else if (day > total) {
-                break;
-            } else {
-                const classNames = []
-                if (day === dia) {
-                    classNames.push('today')
-                } else {
-                    if (j == 6 || j == 0 && day !== dia) {
-                        classNames.push('fds')
-                    }
-                }
-                html += `<td class=${classNames.join("")}>${day}</td>`
-                day++
-            }
-        }
-        html += '</tr>'
-    }
-
-    html += '</table>'
-
-    calendario.innerHTML = html
-}
-
-function informa(props) {
-    const info = document.getElementById('info')
-    if (props) {
-        info.style.display = 'flex'
-    } else {
-        info.style.display = 'none'
-    }
+function closeAlert () {
+    document.getElementById('alert').style.display = 'none'
 }

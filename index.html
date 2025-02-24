@@ -1,93 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ponto</title>
-
-    <link rel="stylesheet" href="stye.css">
+    <title>Ponto RAS</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
-<body class="center" onload="loading()">
-    <section class="center" id="login">
-        <p id="linha"></p>
-        <p id="follow"></p>
-        <section id="container" class="center">
-            <form id="formLogin" class="center" onsubmit="login(event)">
-                <div>
-                    <img src="./assets/roboRAS.min.png" alt="roboRAS">
-                </div>
-                <input type="text" name="usuario">
-                <input type="password" name="senha">
-                <button type="submit">entrar</button>
-            </form>
-        </section>
-    </section>
-
-    <section id="dashboard" class="center" style="display: none;">
-        <p onclick="logout()"
-            style=" cursor: pointer; position: relative; height: 5px; width: 100%; font-size:20pt; text-align:end;">
-            🔚</p>
-        <section id="container-calendario" class="center">
-            <section id="calendario">
-
-            </section>
-        </section>
-        <section class="center" id="regAuto">
-            <section style="display: flex; align-items: baseline;">
-                <span>Registro Automático</span>
-                <div id="lampada">
-                    <span onclick="informa(true)">💡</span>
-                </div>
-            </section>
-            <div style="display: none;" onclick="informa(false)" id="info">
-                Registra automaticamente sua entrada ou saída
-                <br />
-                <br />
-                Utilize quando você chegar ou sair do laboratório
+<body onload="loading()">
+    <section class="container" id="login">
+        <div>
+            <a onclick="newCad()" class="setas">sig in</a>
+        </div>
+        <form id="formLogin" onsubmit="login(event)">
+            <div>
+                <img src="./assets/roboRAS.min.png" alt="roboRAS">
             </div>
-            <div class="container-botoes">
-                <button onclick="registroData(event, 'auto', 'entrada')">Entrada</button>
-                <button onclick="registroData(event, 'auto', 'saida')">Saída</button>
-            </div>
-        </section>
-        <section class="center">
-            <section id="formDasDatas" style="display: none;">
-                <form action="" id="formData" onsubmit="registroData(event, 'escolha', '')" class="center">
-                    <p onclick="revelarForm(2)"
-                        style=" cursor: pointer; position: relative; height: 5px; width: 100%; font-size:20pt ; text-align:end;">
-                        x</p>
-                    <label for="date">
-                        <span>Informe a data</span>
-                        <input type="date" name="dia" id="data">
-                    </label>
-                    <label for="funcao">
-                        <input type="hidden" name="periodo" id="periodo">
-                    </label>
-                    <label for="horario">
-                        <span>Informe a hora</span>
-                        <input type="time" name="hora" id="hora" />
-                    </label>
-                    <button type="submit">Enviar</button>
-                </form>
-            </section>
-
-            <section id="botoesReg" style="
-                    width: 100%;
-                    display: flex;
-                    flex-direction: column;">
-                <span style="text-align: center;">Esqueceu de registrar? </span>
-                <div class="container-botoes">
-                    <button type="button" onclick="revelarForm(1)">Entrada</button>
-                    <button type="button" onclick="revelarForm(0)">Saída</button>
-                </div>
-            </section>
-        </section>
+            <input value="" type="text" name="usuario" placeholder="Matrícula">
+            <input value="" type="password" name="senha" placeholder="Senha">
+            <button type="submit">entrar</button>
+        </form>
     </section>
+    <section class="container" id="cadastro" style="display: none;">
+        <div>
+            <a onclick="newCad()" class="setas" style="justify-content: flex-start !important;">voltar</a>
+        </div>
+        <form id="formCadastro" onsubmit="cadastro(event)">
+            <div class="doubleInput">
+                <label>
+                    <p>Nome: </p><input value="" type="text" placeholder="Nome" name="nome">
+                </label>
+                <label>
+                    <p>Telefone: <span style="font-size: 8pt;">(número apenas)</span> </p>
+                    <input value="" type="text" placeholder="Telefone" name="telefone" maxlength="11">
+                </label>
+            </div>
+            <div class="doubleInput">
+                <label>
+                    <p>Matrícula: <span style="font-size: 8pt;">(número apenas)</span></p><input value="" type="text" maxlength="10" placeholder="matricula" name="Matrícula">
+                </label>
+                <label>
+                    <p>Curso:</p><input value="" type="text" placeholder="Curso" name="curso">
+                </label>
+            </div>
+            <div class="oneLabel">
+                <label>
+                    <p>Email:</p><input value="" type="text" placeholder="Email" name="email">
+                </label>
+            </div>
+            <div class="oneLabel">
+                <label>
+                    <p>Senha:</p><input value="" type="password" placeholder="Senha" name="password">
+                </label>
+            </div>
+            <button type="submit">criar</button>
+        </form>
+    </section>
+    <section id="alert" style="display: none;"></section>
+    <section class="container" id="error" style="display: none;"></section>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="script.js"></script>
 </body>
-
 </html>

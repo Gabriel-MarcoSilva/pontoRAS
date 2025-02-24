@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ponto RAS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body onload="loading()">
+
+    <section class="container">
+        <div style="display: flex; width: 100%; justify-content: flex-end; cursor: pointer;"><a onclick="logout()">Sair</a></div>
+        <h1>Ponto RAS</h1>
+        <div id="timer">
+            <div id="container-timer" class="box">
+                <div id="tempo">00:00:00</div>
+                <div class="container-button">
+                    <button onclick="finishTimer()">Finalizar expediente</button>
+                </div>
+            </div>
+            <div id="container-history" class="box">
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; text-transform: capitalize;">histórico</div>
+            </div>
+        </div>
+        <div id="afazeres" style="display: none;">
+            <form onsubmit="marcarHorario(event)" id="formHorario">
+                <p style="text-align: center; margin-bottom: 20px; font-size: 15pt;">O que você fez durante seu expediente?</p>
+                <textarea onkeyup="habilityButton()" name="afazer" id="afazer" rows="10" cols="50"></textarea>
+                <div class="container-button">
+                    <button type="submit" id="btnMarcarHorario">enviar</button>
+                    <button onclick="fecharPopUp()">cancelar</button>
+                </div>
+            </form>
+        </div>
+    </section>
+    <section id="alert" style="display: none;"></section>
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
