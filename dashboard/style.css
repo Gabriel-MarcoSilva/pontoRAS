@@ -128,6 +128,8 @@ textarea {
     padding: 10px;
     width: 100%;
     border-bottom: 1px solid #ccc;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .history-item:nth-child(even) {
@@ -138,7 +140,6 @@ textarea {
 .history-item:nth-child(odd) {
     background-color: transparent; /* Transparente */
 }
-
 
 #alert {
     width: 80vw;
