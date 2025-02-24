@@ -4,6 +4,7 @@ let rodando = false;
 
 let usuarioID, nome
 let test = false
+let tempoNaC11 = 0
 
 const API = axios.create(
     {
@@ -20,33 +21,7 @@ API.interceptors.request.use((config) => {
     return config
 })
 
-function logout () {
-    const conf = confirm('Deseja sair mesmo? Se sair agora seu progresso será perdido')
-    if (conf) {
-        window.location.href = "../index.html";
-        sessionStorage.clear()
-    }
-}
-
-function loading () {
-    initTimer()
-    getDate()
-}
-
-function formatarTempo(segundos) {
-    let horas = Math.floor(segundos / 3600);
-    let minutos = Math.floor((segundos % 3600) / 60);
-    let seg = segundos % 60;
-    return (
-        String(horas).padStart(2, '0') + ":" +
-        String(minutos).padStart(2, '0') + ":" +
-        String(seg).padStart(2, '0')
-    );
-}
-
-function atualizarDisplay() {
-    document.getElementById("tempo").textContent = formatarTempo(segundos);
-}
+// implementear: se passou de 10 hr ele olha a localização
 
 function decodeToken() {
     const token = sessionStorage.getItem('token')
@@ -67,6 +42,40 @@ function decodeToken() {
     }
 }
 
+function loading () {
+    const verify = sessionStorage.getItem('token') && sessionStorage.getItem('timeInit')
+    if (verify) {
+        initTimer()
+        getDate()
+    } else {
+        window.location.href = "../index.html";
+    }
+}
+
+function logout () {
+    const conf = confirm('Deseja sair mesmo? Se sair agora seu progresso será perdido')
+    if (conf) {
+        window.location.href = "../index.html";
+        sessionStorage.clear()
+    }
+}
+
+function formatarTempo(segundos) {
+    let horas = Math.floor(segundos / 3600);
+    let minutos = Math.floor((segundos % 3600) / 60);
+    let seg = segundos % 60;
+    return (
+        String(horas).padStart(2, '0') + ":" +
+        String(minutos).padStart(2, '0') + ":" +
+        String(seg).padStart(2, '0')
+    );
+}
+
+function atualizarDisplay() {
+    document.getElementById("tempo").textContent = formatarTempo(segundos);
+    document.getElementById('tempoC11').innerText = formatarTempo(tempoNaC11)
+}
+
 async function getDate () {
 
     const DateInicio = new Date();
@@ -81,8 +90,8 @@ async function getDate () {
 
     let response = await API.get(`/horario?dataInicio=${dataInicio}&dataFim=${dataFinal}`).then(res => {
         return res.data
-    }).catch(err => {
-        console.log(err)
+    }).catch(() => {
+        alertCustomized('Não foi possível ver seu histórico', '60vw')
     })
 
     const container = document.getElementById("container-history");
@@ -97,6 +106,7 @@ async function getDate () {
             <strong>Horário:</strong> ${response[i].horario}
             <br/><br/> <strong>Descrição:</strong> ${response[i].descricao}` 
         container.appendChild(div);
+        tempoNaC11 += response[i].horas
     }
 }
 
@@ -123,6 +133,7 @@ function initTimer() {
     const segundo = horaAtual.getSeconds() - segundoInicio
 
     segundos = hora*3600 + minuto*60 + segundo
+    tempoNaC11 = segundos
 
     dados = decodeToken()
     usuarioID = dados.uid
@@ -132,6 +143,7 @@ function initTimer() {
         rodando = true;
         intervalo = setInterval(() => {
             segundos++;
+            tempoNaC11++;
             atualizarDisplay();
         }, 1000);
     }
@@ -144,11 +156,8 @@ const formatDate = (date) => {
   };
 
 function finishTimer() {
-    if (segundos > 180) {
-        clearInterval(intervalo);
+    if (segundos > 10) {
         document.getElementById('afazeres').style.display = 'flex'
-        rodando = false;
-        loading()
     } else {
         alertCustomized('Horário não cadastrado. Você ficou pouco tempo na C11', '50vw')
     }
@@ -197,11 +206,10 @@ function marcarHorario (e) {
     API.post('/horario', payload).then(() => {
         fecharPopUp()
         resetar()
-        getDate()
         sessionStorage.setItem('timeInit', payload.horario)
         document.getElementById('formHorario').reset()
         loading()
-    }).catch((error) => {
+    }).catch(() => {
         alertCustomized('Coloque uma descrição', '30vw')
     })
 }

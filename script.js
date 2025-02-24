@@ -8,11 +8,13 @@ const API = axios.create(
 )
 
 function loading() {
-    API.get('/').then(res => {
-        console.log(res.data)
-    })
-    document.getElementById('formLogin').reset()
-    document.getElementById('formCadastro').reset()
+    const verify = sessionStorage.getItem('token') && sessionStorage.getItem('timeInit')
+    if (!verify) {
+        document.getElementById('formLogin').reset()
+        document.getElementById('formCadastro').reset()
+    } else {
+        window.location.href = "./dashboard/index.html";
+    }
 }
 
 function login (e) {
@@ -29,9 +31,6 @@ function login (e) {
     }
 
     API.post('/login', payload).then((res) =>{
-        console.log('log in')
-        console.log(res.data)
-
         sessionStorage.setItem('token', res.data.accessToken)
 
         const horarioMarcado = sessionStorage.getItem('timeInit')
@@ -41,9 +40,8 @@ function login (e) {
             sessionStorage.setItem('timeInit', (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0'+hour.getSeconds() : hour.getSeconds()))
         }
         window.location.href = "./dashboard/index.html";
-    }).catch((err) => {
+    }).catch(() => {
         alertCustomized('Matrícula e/ou senha incorretas', '20vw')
-        console.log(err)
     })
 }
 
@@ -64,11 +62,11 @@ function cadastro (e) {
         senha: [...dados.values()][5]
     }
 
-    API.post('/usuario', payload).then(res => {
-        console.log('Cadastrado com sucesso')
+    API.post('/usuario', payload).then(() => {
+        alertCustomized('Usuário cadastrado com sucesso!', '50vw')
         newCad()
-    }).catch(err => {
-        console.log(err)
+    }).catch(() => {
+        alertCustomized('Não foi possível cadastrar o usuário', '60vw')
     })
 }
 
