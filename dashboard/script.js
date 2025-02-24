@@ -74,8 +74,7 @@ function formatarTempo(segundos) {
 function atualizarDisplay() {
     document.getElementById("tempo").textContent = formatarTempo(segundos);
     dias = Math.floor(tempoNaC11/86400) // para 24h
-    horario = tempoNaC11 - dias*86400
-    document.getElementById('tempoC11').innerText = (dias > 0 ? dias.toString() + 'd ' : '') + formatarTempo(horario)
+    document.getElementById('tempoC11').innerText = (dias > 0 ? dias.toString() + 'd ' : '') + formatarTempo(tempoNaC11 - dias*86400)
 }
 
 async function getDate () {
@@ -158,7 +157,7 @@ const formatDate = (date) => {
   };
 
 function finishTimer() {
-    if (segundos > 10) {
+    if (segundos > 180) {
         document.getElementById('afazeres').style.display = 'flex'
     } else {
         alertCustomized('Horário não cadastrado. Você ficou pouco tempo na C11', '50vw')
