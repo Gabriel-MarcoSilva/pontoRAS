@@ -73,7 +73,9 @@ function formatarTempo(segundos) {
 
 function atualizarDisplay() {
     document.getElementById("tempo").textContent = formatarTempo(segundos);
-    document.getElementById('tempoC11').innerText = formatarTempo(tempoNaC11)
+    dias = Math.floor(tempoNaC11/86400) // para 24h
+    horario = tempoNaC11 - dias*86400
+    document.getElementById('tempoC11').innerText = (dias > 0 ? dias.toString() + 'd ' : '') + formatarTempo(horario)
 }
 
 async function getDate () {
