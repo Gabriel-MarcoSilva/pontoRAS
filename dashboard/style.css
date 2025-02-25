@@ -21,7 +21,7 @@ body {
     height: 80vh;
     background-color: #1b1b1b;
     border-radius: 5px;
-    box-shadow: 0 0 35px rgba(138, 43, 226,0.5);
+    box-shadow: 0 0 35px rgba(138, 43, 226, 0.5);
     padding: 10px;
     color: #fff;
     display: flex;
@@ -60,7 +60,7 @@ body {
     font-family: sans-serif;
     font-size: 30pt;
     border-radius: 5px;
-    box-shadow: 0 0 20px rgba(0, 0, 0,0.5);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .container-button {
@@ -94,7 +94,7 @@ body {
     height: 50vh;
     width: 40vw;
     background-color: #1b1b1b;
-    box-shadow: 0 0 20px rgba(138, 43, 226,0.5);
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
 }
 
 #afazeres form {
@@ -133,12 +133,14 @@ textarea {
 }
 
 .history-item:nth-child(even) {
-    background-color: white; /* Branco */
+    background-color: white;
+    /* Branco */
     color: #1b1b1b;
 }
 
 .history-item:nth-child(odd) {
-    background-color: transparent; /* Transparente */
+    background-color: transparent;
+    /* Transparente */
 }
 
 #alert {
@@ -147,12 +149,15 @@ textarea {
     background-color: #fff;
     bottom: 0;
     left: 0vw;
+    margin: 0;
     border-radius: 0 5px 5px 0;
     position: absolute;
     animation: moveIn 7s ease-in-out;
     display: flex;
+    align-items: center;
     padding: 5px;
     justify-content: space-between;
+    z-index: 100;
 }
 
 .messageAlert {
@@ -161,16 +166,120 @@ textarea {
     font-family: sans-serif;
 }
 
+#container-dataUser {
+    position: absolute;
+    height: 100vh;
+    width: 30vw;
+    background-color: #1b1b1b;
+    left: -30vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    box-shadow: 5px 0px 10px rgb(138, 43, 226);
+
+}
+
+#openMenu {
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    margin: auto;
+    display: flex;
+    z-index: 1;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: #1b1b1b;
+    color: #fff;
+    position: absolute;
+    text-align: center;
+    font-family: sans-serif;
+    border-radius: 0 5px 5px 0;
+    font-size: 15pt;
+    box-shadow: 6px 0px 10px rgb(138, 43, 226);
+}
+
+#dataUser {
+    margin: auto;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    height: 30vh;
+    width: 100%;
+    font-family: sans-serif;
+}
+
+#dataUser p {
+    color: #fff;
+}
+
+#dataUser span {
+    color: rgb(138, 43, 226);
+}
+
+#upMembreship {
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+#upMembreship:hover {
+    filter: drop-shadow(0 0 15px rgb(138, 43, 226));
+    font-size: 12pt;
+}
+
+#formMembreship {
+    margin-top: 5px;
+    display: none;
+    align-items: center;
+}
+
+#formMembreship input {
+    height: 6vh;
+    width: 75%;
+    border-radius: 5px;
+    border: 3px solid rgb(138, 43, 226);
+    color: rgb(138, 43, 226);
+    padding: 5px 10px;
+    font-weight: bold;
+}
+
+#formMembreship button {
+    color: rgb(138, 43, 226);
+    width: 20%;
+    height: 6vh;
+    padding: 5px 15px;
+    margin: auto;
+    border: 3px solid rgb(138, 43, 226);
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #1b1b1b;
+    border-radius: 2px;
+}
+
+#formMembreship button:hover {
+    color: #1b1b1b;
+    background-color: rgb(138, 43, 226);
+    border: 3px solid #1b1b1b;
+}
+
 @keyframes moveIn {
     0% {
         left: -80vw;
     }
+
     10% {
         left: 0;
     }
+
     90% {
         left: 0;
     }
+
     100% {
         left: -80vw;
     }

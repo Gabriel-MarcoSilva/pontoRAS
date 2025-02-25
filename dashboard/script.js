@@ -10,6 +10,8 @@ let local
 let deltaLatitude, deltaLongitude
 
 let dataControle = new Date()
+let isOpen = false
+let dataUser = []
 
 const API = axios.create(
     {
@@ -48,6 +50,22 @@ function decodeToken() {
 }
 
 async function loading() {
+    const verify = sessionStorage.getItem('token');
+    if (verify) {
+        initTimer();
+        await getDate();
+    }
+
+    dataUser = await API.get(`/usuario?id=${usuarioID}`).then(async (res) => {
+        return await res.data
+    }).catch((err) => {
+        console.error(err)
+    })
+
+    console.log(dataUser)
+}
+
+async function loading2() {
     try {
         await obterLocalizacao(); // Aguarda a localização antes de continuar
         const verify = sessionStorage.getItem('token');
@@ -64,9 +82,6 @@ async function loading() {
             if (verify) {
                 initTimer();
                 await getDate();
-            } else {
-                sessionStorage.clear();
-                window.location.href = "../index.html";
             }
         } else {
             await getDate();
@@ -282,4 +297,54 @@ async function obterLocalizacao() {
             reject(new Error("Geolocalização não suportada"));
         }
     });
+}
+
+function openMenu() {
+    document.getElementById('nameUser').innerText = dataUser[0].nome
+    document.getElementById('matriculaUser').innerText = dataUser[0].matricula
+    document.getElementById('membresiaUser').innerText = dataUser[0].membresia.split('/')[0]
+    document.getElementById('cursoUser').innerText = dataUser[0].curso
+
+    if (!isOpen) {
+        document.getElementById('container-dataUser').style.transform = 'translateX(30vw)'
+        document.getElementById('openMenu').style.transform = 'translateX(30vw)'
+        document.getElementById('openMenu').innerText = '🔙'
+    } else {
+        document.getElementById('container-dataUser').style.transform = 'translateX(0)'
+        document.getElementById('openMenu').style.transform = 'translateX(0)'
+        document.getElementById('openMenu').innerText = '🔜'
+    }
+    document.getElementById('openMenu').style.transition = '0.4s'
+    document.getElementById('container-dataUser').style.transition = '0.4s'
+    isOpen = !isOpen
+}
+
+function opemFormMembreship() {
+    if (confirm('Você possui membresia?')) {
+        document.getElementById('formMembreship').style.display = 'flex'
+        document.getElementsByName('mebresia')[0].value = dataUser[0].membresia.split('/')[0]
+    }
+}
+
+function upMembreship(e) {
+    const form = document.getElementById('formMembreship')
+
+    e.preventDefault()
+    const data = new FormData(form)
+
+    const dados = new URLSearchParams(data)
+
+    const payload = {
+        id: usuarioID,
+        membresia: [...dados.values()][0] + '/ON',
+    }
+
+    API.post('/upmembresia', payload).then((res) => {
+        dataUser[0].membresia = payload.membresia
+        document.getElementById('membresiaUser').innerText = payload.membresia.split('/')[0]
+        document.getElementById('formMembreship').style.display = 'none'
+        alertCustomized('Membresia atualizada com sucesso!', '30vw')
+    }).catch((err) => {
+        console.log(err)
+    })
 }

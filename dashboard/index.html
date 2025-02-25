@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ponto RAS</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body onload="loading()">
 
     <section class="container">
-        <div style="display: flex; width: 100%; justify-content: flex-end; cursor: pointer;"><a onclick="logout()">Sair</a></div>
+        <div style="display: flex; width: 100%; justify-content: flex-end; cursor: pointer;"><a
+                onclick="logout()">Sair</a></div>
         <h1>Ponto RAS</h1>
         <div id="timer">
             <div id="container-timer" class="box">
@@ -20,12 +23,15 @@
                 <div>Seu tempo na C11: <span id="tempoC11"></span></div>
             </div>
             <div id="container-history" class="box">
-                <div style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; text-transform: capitalize;">histórico</div>
+                <div
+                    style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; text-transform: capitalize;">
+                    histórico</div>
             </div>
         </div>
         <div id="afazeres" style="display: none;">
             <form onsubmit="marcarHorario(event)" id="formHorario">
-                <p style="text-align: center; margin-bottom: 20px; font-size: 15pt;">O que você fez durante seu expediente?</p>
+                <p style="text-align: center; margin-bottom: 20px; font-size: 15pt;">O que você fez durante seu
+                    expediente?</p>
                 <textarea onkeyup="habilityButton()" name="afazer" id="afazer" rows="10" cols="50"></textarea>
                 <div class="container-button">
                     <button type="submit" id="btnMarcarHorario">enviar</button>
@@ -34,9 +40,33 @@
             </form>
         </div>
     </section>
+
     <section id="alert" style="display: none;"></section>
-    
+
+    <section id="openMenu" onclick="openMenu()">🔜</section>
+    <section id="container-dataUser">
+        <div id="dataUser">
+            <p>Nome: <span id="nameUser"></span></p>
+            <hr>
+            <p>Curso: <span id="cursoUser"></span></p>
+            <hr>
+            <p>Matrícula: <span id="matriculaUser"></span></p>
+            <hr>
+            <div style="height: 8vh;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <p>Nº Membresia: <span id="membresiaUser"></span></p>
+                    <button onclick="opemFormMembreship()" id="upMembreship">🖋️</button>
+                </div>
+                <form onsubmit="upMembreship(event)" id="formMembreship">
+                    <input type="text" name="mebresia" maxlength="8">
+                    <button type="submit">ok</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

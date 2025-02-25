@@ -8,6 +8,11 @@ const API = axios.create(
 )
 
 function loading() {
+    API.get('/').then(() => {
+        console.log('api on')
+    }).catch(() => {
+        console.log('api off')
+    })
     const verify = sessionStorage.getItem('token') && sessionStorage.getItem('timeInit')
     if (!verify) {
         document.getElementById('formLogin').reset()
@@ -17,7 +22,7 @@ function loading() {
     }
 }
 
-function login (e) {
+function login(e) {
     const form = document.getElementById('formLogin')
 
     e.preventDefault()
@@ -30,14 +35,14 @@ function login (e) {
         senha: [...dados.values()][1],
     }
 
-    API.post('/login', payload).then((res) =>{
+    API.post('/login', payload).then((res) => {
         sessionStorage.setItem('token', res.data.accessToken)
 
         const horarioMarcado = sessionStorage.getItem('timeInit')
 
         if (horarioMarcado !== null || horarioMarcado !== undefined) {
             const hour = new Date()
-            sessionStorage.setItem('timeInit', (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0'+hour.getSeconds() : hour.getSeconds()))
+            sessionStorage.setItem('timeInit', (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0' + hour.getSeconds() : hour.getSeconds()))
         }
         window.location.href = "./dashboard/index.html";
     }).catch(() => {
@@ -45,7 +50,7 @@ function login (e) {
     })
 }
 
-function cadastro (e) {
+function cadastro(e) {
     const form = document.getElementById('formCadastro')
 
     e.preventDefault()
@@ -100,6 +105,6 @@ function alertCustomized(message, size) {
     }, 7000);
 }
 
-function closeAlert () {
+function closeAlert() {
     document.getElementById('alert').style.display = 'none'
 }
