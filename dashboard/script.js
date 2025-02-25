@@ -103,7 +103,7 @@ function atualizarDisplay() {
 
 async function getDate () {
 
-    const DateInicio = new Date();
+    /*const DateInicio = new Date();
     const PrimeiroDiaMes = new Date(
         DateInicio.getFullYear(),
         DateInicio.getMonth(),
@@ -112,8 +112,10 @@ async function getDate () {
 
     const dataFinal = formatDate(DateInicio);
     const dataInicio = formatDate(PrimeiroDiaMes);
-
     let response = await API.get(`/horario?dataInicio=${dataInicio}&dataFim=${dataFinal}`).then(res => {
+    */
+
+    let response = await API.get(`/buscainfo?usuarioId=${usuarioID}`).then(res => {
         return res.data
     }).catch(() => {
         alertCustomized('Não foi possível ver seu histórico', '60vw')
