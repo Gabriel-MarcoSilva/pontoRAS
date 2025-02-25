@@ -6,6 +6,11 @@ let usuarioID, nome
 let test = false
 let tempoNaC11 = 0
 
+let local
+let deltaLatitude, deltaLongitude
+
+let dataControle = new Date()
+
 const API = axios.create(
     {
         baseURL: 'https://rrasponto.onrender.com',
@@ -14,11 +19,11 @@ const API = axios.create(
 )
 
 API.interceptors.request.use((config) => {
-    const token = sessionStorage.getItem('token')
+    const token = sessionStorage.getItem('token');
     if (token) {
-        config.headers.Authorization = `Barear ${token}`
+        config.headers.Authorization = `Bearer ${token}`; // Corrigido "Bearer"
     }
-    return config
+    return config;
 })
 
 // implementear: se passou de 10 hr ele olha a localização
@@ -42,18 +47,37 @@ function decodeToken() {
     }
 }
 
-function loading () {
-    const verify = sessionStorage.getItem('token') && sessionStorage.getItem('timeInit')
-    if (verify) {
-        initTimer()
-        getDate()
-    } else {
-        window.location.href = "../index.html";
+async function loading() {
+    try {
+        await obterLocalizacao(); // Aguarda a localização antes de continuar
+        const verify = sessionStorage.getItem('token');
+
+        // Verifica se está dentro da margem de erro (ajuste se necessário)
+        const margemErro = 0.01; // Ajuste esse valor conforme necessário
+        local = deltaLatitude < margemErro && deltaLongitude < margemErro;
+
+        if (local) {
+            sessionStorage.setItem('timeInit', (dataControle.getHours() < 10 ? '0' + dataControle.getHours() : dataControle.getHours()) + ':' + (dataControle.getMinutes() < 10 ? '0' + dataControle.getMinutes() : dataControle.getMinutes()) + ':' + (dataControle.getSeconds() < 10 ? '0'+dataControle.getSeconds() : dataControle.getSeconds()))
+            if (verify) {
+                initTimer();
+                await getDate();
+            } else {
+                sessionStorage.clear();
+                window.location.href = "../index.html";
+            }
+        } else {
+            await getDate();
+            document.getElementById('btnParar').disabled = true;
+            atualizarDisplay();
+        }
+
+    } catch (error) {
+        console.log("Erro ao carregar localização:", error);
     }
 }
 
 function logout () {
-    const conf = confirm('Deseja sair mesmo? Se sair agora seu progresso será perdido')
+    const conf = segundos > 0 ? confirm('Deseja sair mesmo? Se sair agora seu progresso será perdido') : true
     if (conf) {
         window.location.href = "../index.html";
         sessionStorage.clear()
@@ -119,6 +143,13 @@ function dateVisual(date) {
     const ano = data.split('-')[0]
     return dia + '/' + mes + '/' + ano
 }
+
+const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
   
 function initTimer() {
     const hourMarked = sessionStorage.getItem('timeInit')
@@ -149,12 +180,29 @@ function initTimer() {
         }, 1000);
     }
 }
-const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
+
+function marcarHorario (e) {
+    e.preventDefault()
+    const hour = new Date()
+    const description = document.getElementsByName('afazer')[0].value
+
+    const payload = {
+        horas: segundos,
+        horario: (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0'+hour.getSeconds() : hour.getSeconds()),
+        descricao: description.split('\n')[0],
+        usuarioId:usuarioID
+    }
+
+    API.post('/horario', payload).then(() => {
+        fecharPopUp()
+        resetar()
+        sessionStorage.setItem('timeInit', payload.horario)
+        document.getElementById('formHorario').reset()
+        loading()
+    }).catch(() => {
+        alertCustomized('Coloque uma descrição', '30vw')
+    })
+}
 
 function finishTimer() {
     if (segundos > 180) {
@@ -164,6 +212,18 @@ function finishTimer() {
     }
 }
 
+function fecharPopUp () {
+    document.getElementById('afazeres').style.display = 'none'
+    document.getElementById('formHorario').reset()
+}
+
+function resetar() {
+    clearInterval(intervalo);
+    segundos = 0;
+    rodando = false;
+    atualizarDisplay();
+}
+    
 function alertCustomized(message, size) {
     const alert = document.getElementById('alert')
     alert.innerHTML = ""; // Limpa antes de renderizar
@@ -192,37 +252,27 @@ function habilityButton() {
     }
 }
 
-function marcarHorario (e) {
-    e.preventDefault()
-    const hour = new Date()
-    const description = document.getElementsByName('afazer')[0].value
+async function obterLocalizacao() {
+    return new Promise((resolve, reject) => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                function (posicao) {
+                    const latitude = posicao.coords.latitude;
+                    const longitude = posicao.coords.longitude;
 
-    const payload = {
-        horas: segundos,
-        horario: (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0'+hour.getSeconds() : hour.getSeconds()),
-        descricao: description.split('\n')[0],
-        usuarioId:usuarioID
-    }
-
-    API.post('/horario', payload).then(() => {
-        fecharPopUp()
-        resetar()
-        sessionStorage.setItem('timeInit', payload.horario)
-        document.getElementById('formHorario').reset()
-        loading()
-    }).catch(() => {
-        alertCustomized('Coloque uma descrição', '30vw')
-    })
-}
-
-function fecharPopUp () {
-    document.getElementById('afazeres').style.display = 'none'
-    document.getElementById('formHorario').reset()
-}
-
-function resetar() {
-    clearInterval(intervalo);
-    segundos = 0;
-    rodando = false;
-    atualizarDisplay();
+                    deltaLatitude = Math.abs(Math.abs(latitude )- 12.656981);
+                    deltaLongitude = Math.abs(Math.abs(longitude) - 39.094652);
+                    
+                    resolve(); // Finaliza a Promise quando a localização é obtida
+                },
+                function (erro) {
+                    alertCustomized("Erro ao obter localização", "30vw")
+                    reject(erro);
+                }
+            );
+        } else {
+            console.log("Geolocalização não é suportada neste navegador.");
+            reject(new Error("Geolocalização não suportada"));
+        }
+    });
 }
