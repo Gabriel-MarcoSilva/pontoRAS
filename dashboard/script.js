@@ -57,7 +57,10 @@ async function loading() {
         local = deltaLatitude < margemErro && deltaLongitude < margemErro;
 
         if (local) {
-            sessionStorage.setItem('timeInit', (dataControle.getHours() < 10 ? '0' + dataControle.getHours() : dataControle.getHours()) + ':' + (dataControle.getMinutes() < 10 ? '0' + dataControle.getMinutes() : dataControle.getMinutes()) + ':' + (dataControle.getSeconds() < 10 ? '0'+dataControle.getSeconds() : dataControle.getSeconds()))
+            document.getElementById('btnParar').disabled = false;
+            if (!sessionStorage.getItem('timeInit')) {
+                sessionStorage.setItem('timeInit', (dataControle.getHours() < 10 ? '0' + dataControle.getHours() : dataControle.getHours()) + ':' + (dataControle.getMinutes() < 10 ? '0' + dataControle.getMinutes() : dataControle.getMinutes()) + ':' + (dataControle.getSeconds() < 10 ? '0'+dataControle.getSeconds() : dataControle.getSeconds()))
+            }
             if (verify) {
                 initTimer();
                 await getDate();
