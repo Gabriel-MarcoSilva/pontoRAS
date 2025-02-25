@@ -32,18 +32,18 @@ function decodeToken() {
     const token = sessionStorage.getItem('token')
 
     try {
-      const base64Url = token.split('.')[1]; // Pega a parte do payload (segundo bloco)
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Ajusta caracteres especiais
-      const jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split('')
-          .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
-          .join('')
-      );
-      return JSON.parse(jsonPayload); // Retorna o objeto JSON decodificado
+        const base64Url = token.split('.')[1]; // Pega a parte do payload (segundo bloco)
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Ajusta caracteres especiais
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
+                .join('')
+        );
+        return JSON.parse(jsonPayload); // Retorna o objeto JSON decodificado
     } catch (e) {
-      console.error('Erro ao decodificar o token:', e);
-      return null;
+        console.error('Erro ao decodificar o token:', e);
+        return null;
     }
 }
 
@@ -59,7 +59,7 @@ async function loading() {
         if (local) {
             document.getElementById('btnParar').disabled = false;
             if (!sessionStorage.getItem('timeInit')) {
-                sessionStorage.setItem('timeInit', (dataControle.getHours() < 10 ? '0' + dataControle.getHours() : dataControle.getHours()) + ':' + (dataControle.getMinutes() < 10 ? '0' + dataControle.getMinutes() : dataControle.getMinutes()) + ':' + (dataControle.getSeconds() < 10 ? '0'+dataControle.getSeconds() : dataControle.getSeconds()))
+                sessionStorage.setItem('timeInit', (dataControle.getHours() < 10 ? '0' + dataControle.getHours() : dataControle.getHours()) + ':' + (dataControle.getMinutes() < 10 ? '0' + dataControle.getMinutes() : dataControle.getMinutes()) + ':' + (dataControle.getSeconds() < 10 ? '0' + dataControle.getSeconds() : dataControle.getSeconds()))
             }
             if (verify) {
                 initTimer();
@@ -79,7 +79,7 @@ async function loading() {
     }
 }
 
-function logout () {
+function logout() {
     const conf = segundos > 0 ? confirm('Deseja sair mesmo? Se sair agora seu progresso será perdido') : true
     if (conf) {
         window.location.href = "../index.html";
@@ -100,11 +100,11 @@ function formatarTempo(segundos) {
 
 function atualizarDisplay() {
     document.getElementById("tempo").textContent = formatarTempo(segundos);
-    dias = Math.floor(tempoNaC11/86400) // para 24h
-    document.getElementById('tempoC11').innerText = (dias > 0 ? dias.toString() + 'd ' : '') + formatarTempo(tempoNaC11 - dias*86400)
+    dias = Math.floor(tempoNaC11 / 86400) // para 24h
+    document.getElementById('tempoC11').innerText = (dias > 0 ? dias.toString() + 'd ' : '') + formatarTempo(tempoNaC11 - dias * 86400)
 }
 
-async function getDate () {
+async function getDate() {
 
     /*const DateInicio = new Date();
     const PrimeiroDiaMes = new Date(
@@ -134,7 +134,7 @@ async function getDate () {
             <strong>Data:</strong>${dateVisual(response[i].data)} |
             <strong>Tempo:</strong> ${formatarTempo(response[i].horas)} | 
             <strong>Horário:</strong> ${response[i].horario}
-            <br/><br/> <strong>Descrição:</strong> ${response[i].descricao}` 
+            <br/><br/> <strong>Descrição:</strong> ${response[i].descricao}`
         container.appendChild(div);
         tempoNaC11 += response[i].horas
     }
@@ -154,8 +154,8 @@ const formatDate = (date) => {
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
-  };
-  
+};
+
 function initTimer() {
     const hourMarked = sessionStorage.getItem('timeInit')
 
@@ -169,7 +169,7 @@ function initTimer() {
     const minuto = horaAtual.getMinutes() - minutoInicio
     const segundo = horaAtual.getSeconds() - segundoInicio
 
-    segundos = hora*3600 + minuto*60 + segundo
+    segundos = hora * 3600 + minuto * 60 + segundo
     tempoNaC11 = segundos
 
     dados = decodeToken()
@@ -186,16 +186,16 @@ function initTimer() {
     }
 }
 
-function marcarHorario (e) {
+function marcarHorario(e) {
     e.preventDefault()
     const hour = new Date()
     const description = document.getElementsByName('afazer')[0].value
 
     const payload = {
         horas: segundos,
-        horario: (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0'+hour.getSeconds() : hour.getSeconds()),
+        horario: (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0' + hour.getSeconds() : hour.getSeconds()),
         descricao: description.split('\n')[0],
-        usuarioId:usuarioID
+        usuarioId: usuarioID
     }
 
     API.post('/horario', payload).then(() => {
@@ -203,10 +203,12 @@ function marcarHorario (e) {
         resetar()
         sessionStorage.setItem('timeInit', payload.horario)
         document.getElementById('formHorario').reset()
+        document.getElementById('btnMarcarHorario').disabled = true
         loading()
     }).catch(() => {
         alertCustomized('Coloque uma descrição', '30vw')
     })
+    document.getElementById('btnMarcarHorario').disabled = false
 }
 
 function finishTimer() {
@@ -217,7 +219,7 @@ function finishTimer() {
     }
 }
 
-function fecharPopUp () {
+function fecharPopUp() {
     document.getElementById('afazeres').style.display = 'none'
     document.getElementById('formHorario').reset()
 }
@@ -228,7 +230,7 @@ function resetar() {
     rodando = false;
     atualizarDisplay();
 }
-    
+
 function alertCustomized(message, size) {
     const alert = document.getElementById('alert')
     alert.innerHTML = ""; // Limpa antes de renderizar
@@ -265,9 +267,9 @@ async function obterLocalizacao() {
                     const latitude = posicao.coords.latitude;
                     const longitude = posicao.coords.longitude;
 
-                    deltaLatitude = Math.abs(Math.abs(latitude )- 12.656981);
+                    deltaLatitude = Math.abs(Math.abs(latitude) - 12.656981);
                     deltaLongitude = Math.abs(Math.abs(longitude) - 39.094652);
-                    
+
                     resolve(); // Finaliza a Promise quando a localização é obtida
                 },
                 function (erro) {
