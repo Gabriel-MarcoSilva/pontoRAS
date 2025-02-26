@@ -12,6 +12,7 @@ let deltaLatitude, deltaLongitude
 let dataControle = new Date()
 let isOpen = false
 let dataUser = []
+let widthScreen = 0
 
 const API = axios.create(
     {
@@ -42,6 +43,9 @@ function decodeToken() {
                 .map((c) => `%${('00' + c.charCodeAt(0).toString(16)).slice(-2)}`)
                 .join('')
         );
+
+        sessionStorage.setItem('dataUser', jsonPayload)
+
         return JSON.parse(jsonPayload); // Retorna o objeto JSON decodificado
     } catch (e) {
         console.error('Erro ao decodificar o token:', e);
@@ -63,6 +67,10 @@ async function loading() {
     })
 
     console.log(dataUser)
+
+    if (dataUser[0].role === 'admin') {
+        document.getElementById('acessoAdmin').style.display = 'block'
+    }
 }
 
 async function loading2() {
@@ -219,6 +227,7 @@ function marcarHorario(e) {
         sessionStorage.setItem('timeInit', payload.horario)
         document.getElementById('formHorario').reset()
         document.getElementById('btnMarcarHorario').disabled = true
+        alertCustomized('Registrado com sucesso!', '30vw')
         loading()
     }).catch(() => {
         alertCustomized('Coloque uma descrição', '30vw')
@@ -300,23 +309,35 @@ async function obterLocalizacao() {
 }
 
 function openMenu() {
+    verifyScreen()
+
     document.getElementById('nameUser').innerText = dataUser[0].nome
+    document.getElementById('cursoUser').innerText = dataUser[0].curso
     document.getElementById('matriculaUser').innerText = dataUser[0].matricula
     document.getElementById('membresiaUser').innerText = dataUser[0].membresia.split('/')[0]
-    document.getElementById('cursoUser').innerText = dataUser[0].curso
+
 
     if (!isOpen) {
-        document.getElementById('container-dataUser').style.transform = 'translateX(30vw)'
-        document.getElementById('openMenu').style.transform = 'translateX(30vw)'
+        document.getElementById('container-dataUser').style.transform = `translateX(${widthScreen})`
+        document.getElementById('openMenu').style.transform = `translateX(${widthScreen})`
         document.getElementById('openMenu').innerText = '🔙'
     } else {
         document.getElementById('container-dataUser').style.transform = 'translateX(0)'
         document.getElementById('openMenu').style.transform = 'translateX(0)'
         document.getElementById('openMenu').innerText = '🔜'
     }
+
     document.getElementById('openMenu').style.transition = '0.4s'
     document.getElementById('container-dataUser').style.transition = '0.4s'
     isOpen = !isOpen
+}
+
+function verifyScreen() {
+    if (window.screen.width <= 400) {
+        widthScreen = '70vw'
+    } else {
+        widthScreen = '30vw'
+    }
 }
 
 function openFormMembreship() {
@@ -351,4 +372,8 @@ function upMembreship(e) {
     }).catch((err) => {
         console.log(err)
     })
+}
+
+function goToAdmin() {
+    window.location.href = "../dashboard_admin/index.html";
 }
