@@ -26,7 +26,7 @@ async function loading() {
     dataUser = await API.get(`/usuario?id=${usuarioID}`).then(async (res) => {
         return await res.data
     }).catch((err) => {
-        console.error(err)
+        alertCustomized('Não foi possível conectar', '25vw')
     })
 
     byTag('id', 'formCadastro').reset()
@@ -103,13 +103,11 @@ function cadastro(e) {
         alertCustomized('Campos não preenchidos', '30vw')
 
     }
-    console.log(payload)
 
     API.post('/usuario', payload).then(() => {
         alertCustomized('Usuário cadastrado com sucesso!', '50vw')
         newCad()
     }).catch((err) => {
-        console.error(err)
         alertCustomized('Não foi possível cadastrar o usuário', '60vw')
     })
 }

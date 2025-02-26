@@ -48,7 +48,6 @@ function decodeToken() {
 
         return JSON.parse(jsonPayload); // Retorna o objeto JSON decodificado
     } catch (e) {
-        console.error('Erro ao decodificar o token:', e);
         return null;
     }
 }
@@ -63,10 +62,8 @@ async function loading() {
     dataUser = await API.get(`/usuario?id=${usuarioID}`).then(async (res) => {
         return await res.data
     }).catch((err) => {
-        console.error(err)
+        return null
     })
-
-    console.log(dataUser)
 
     if (dataUser[0].role === 'admin') {
         document.getElementById('acessoAdmin').style.display = 'block'
@@ -98,7 +95,7 @@ async function loading2() {
         }
 
     } catch (error) {
-        console.log("Erro ao carregar localização:", error);
+        return null
     }
 }
 
@@ -302,7 +299,7 @@ async function obterLocalizacao() {
                 }
             );
         } else {
-            console.log("Geolocalização não é suportada neste navegador.");
+            alertCustomized("Geolocalização não é suportada neste navegador.", '40vw');
             reject(new Error("Geolocalização não suportada"));
         }
     });
@@ -370,7 +367,7 @@ function upMembreship(e) {
         document.getElementById('formMembreship').style.display = 'none'
         alertCustomized('Membresia atualizada com sucesso!', '30vw')
     }).catch((err) => {
-        console.log(err)
+        alertCustomized('Não foi possível atualizar sua membresia', '35vw')
     })
 }
 

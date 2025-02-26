@@ -97,7 +97,7 @@ div .setas {
     cursor: pointer;
 }
 
-doubleInput {
+.doubleInput {
     display: flex;
     width: 75%;
 }

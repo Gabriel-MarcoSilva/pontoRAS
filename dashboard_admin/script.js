@@ -26,10 +26,8 @@ async function loading() {
     dataUser = await API.get(`/usuario?id=${usuarioID}`).then(async (res) => {
         return await res.data
     }).catch((err) => {
-        console.error(err)
+        alertCustomized('Não foi possível conectar', '25vw')
     })
-
-    console.log(dataUser)
 
     if (dataUser[0].role === 'admin') {
         byTag('id', 'acessoAdmin').style.display = 'block'
@@ -97,7 +95,7 @@ function upMembreship(e) {
         byTag('id', 'formMembreship').style.display = 'none'
         alertCustomized('Membresia atualizada com sucesso!', '30vw')
     }).catch((err) => {
-        console.log(err)
+        alertCustomized('Não foi possível atualizar a membresia', '35vw')
     })
 }
 
@@ -111,15 +109,12 @@ async function addSelect() {
 
     try {
         const users = await API.get('/usuario').then(res => res.data)
-        console.log(users)
-
         const option = document.createElement("option")
         option.value = '--' // Define o valor da opção
         option.textContent = 'Selecione o usuário' // Define o texto visível
         select.appendChild(option)
 
         for (let i = 0; i < users.length; i++) {
-            // console.log(users[i].role)
             const option = document.createElement("option")
             option.value = users[i].id // Define o valor da opção
             option.textContent = users[i].nome // Define o texto visível
@@ -172,22 +167,20 @@ async function buscarUser() {
 
         tempoUser = await API.get(`/calcular?usuarioId=${dataUserSearch[0].id}`).then((res) => {
             return res.data
-        }).catch((err) => {
-            console.error(err)
+        }).catch(() => {
             return 0
         })
 
-        historicoUser = await API.get(`/admin_busca?matricula=${dataUserSearch[0].matricula}`).then((res) => {
-            return res.data
-        }).catch((err) => {
-            console.error(err)
-            return []
-        })
+        if (tempoUser !== 0) {
+            historicoUser = await API.get(`/admin_busca?matricula=${dataUserSearch[0].matricula}`).then((res) => {
+                return res.data
+            }).catch(() => {
+                return []
+            })
+        }
 
         preencheTabela()
     }
-
-    loading()
 }
 
 function preencheTabela() {
@@ -231,6 +224,8 @@ function preencheTabela() {
                 <br/><br/> <strong>Descrição:</strong> ${historicoUser[i].descricao}`
             container.appendChild(div);
         }
+    } else {
+        container.innerHTML = ''
     }
 }
 
@@ -252,4 +247,21 @@ function formatarTempo(segundos) {
         String(minutos).padStart(2, '0') + ":" +
         String(seg).padStart(2, '0')
     );
+}
+
+function alertCustomized(message, size) {
+    const alert = document.getElementById('alert')
+    alert.innerHTML = ""; // Limpa antes de renderizar
+
+    alert.style.display = 'flex'
+    alert.style.width = size
+
+    const p = document.createElement("p")
+    p.classList.add("messageAlert")
+    p.innerHTML = message
+    alert.appendChild(p)
+
+    setInterval(() => {
+        alert.style.display = 'none'
+    }, 7000);
 }
