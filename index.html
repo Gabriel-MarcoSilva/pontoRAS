@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ponto RAS</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body onload="loading()">
     <section class="container" id="login">
         <div>
@@ -17,7 +19,8 @@
             </div>
             <div class="oneLabel">
                 <label style="display: flex; flex-direction: column; color: #fff;">
-                    <p style="text-align: start; width: 70%; font-size: 10pt;">Matrícula: <span style="font-size: 8pt;">(somente números)</span></p>
+                    <p style="text-align: start; width: 70%; font-size: 10pt;">Matrícula: <span
+                            style="font-size: 8pt;">(somente números)</span></p>
                     <input name="matricula" type="text" placeholder="Matrícula" maxlength="10">
                 </label>
             </div>
@@ -30,45 +33,11 @@
             <button type="submit">entrar</button>
         </form>
     </section>
-    <section class="container" id="cadastro" style="display: none;">
-        <div>
-            <a onclick="newCad()" class="setas" style="justify-content: flex-start !important;">voltar</a>
-        </div>
-        <form id="formCadastro" onsubmit="cadastro(event)">
-            <div class="doubleInput">
-                <label>
-                    <p>Nome: </p><input value="" type="text" placeholder="Nome" name="nome">
-                </label>
-                <label>
-                    <p>Telefone: <span style="font-size: 8pt;">(número apenas)</span> </p>
-                    <input value="" type="text" placeholder="Telefone" name="telefone" maxlength="11">
-                </label>
-            </div>
-            <div class="doubleInput">
-                <label>
-                    <p>Matrícula: <span style="font-size: 8pt;">(número apenas)</span></p><input value="" type="text" maxlength="10" placeholder="matricula" name="Matrícula">
-                </label>
-                <label>
-                    <p>Curso:</p><input value="" type="text" placeholder="Curso" name="curso">
-                </label>
-            </div>
-            <div class="oneLabel">
-                <label>
-                    <p>Email:</p><input value="" type="text" placeholder="Email" name="email">
-                </label>
-            </div>
-            <div class="oneLabel">
-                <label>
-                    <p>Senha:</p><input value="" type="password" placeholder="Senha" name="password">
-                </label>
-            </div>
-            <button type="submit">criar</button>
-        </form>
-    </section>
     <section id="alert" style="display: none;"></section>
     <section class="container" id="error" style="display: none;"></section>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>

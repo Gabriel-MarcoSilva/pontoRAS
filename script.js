@@ -50,44 +50,6 @@ function login(e) {
     })
 }
 
-function cadastro(e) {
-    const form = document.getElementById('formCadastro')
-
-    e.preventDefault()
-    const data = new FormData(form)
-
-    const dados = new URLSearchParams(data)
-
-    const payload = {
-        nome: [...dados.values()][0],
-        telefone: [...dados.values()][1],
-        matricula: [...dados.values()][2],
-        curso: [...dados.values()][3],
-        email: [...dados.values()][4],
-        senha: [...dados.values()][5]
-    }
-
-    API.post('/usuario', payload).then(() => {
-        alertCustomized('Usuário cadastrado com sucesso!', '50vw')
-        newCad()
-    }).catch(() => {
-        alertCustomized('Não foi possível cadastrar o usuário', '60vw')
-    })
-}
-
-function newCad() {
-    if (document.getElementById('cadastro').style.display == 'flex') {
-        document.getElementById('login').style.display = 'flex'
-        document.getElementById('cadastro').style.display = 'none'
-        document.getElementById('formLogin').reset()
-
-    } else {
-        document.getElementById('login').style.display = 'none'
-        document.getElementById('cadastro').style.display = 'flex'
-        document.getElementById('formCadastro').reset()
-    }
-}
-
 function alertCustomized(message, size) {
     const alert = document.getElementById('alert')
     alert.innerHTML = ""; // Limpa antes de renderizar
@@ -107,4 +69,8 @@ function alertCustomized(message, size) {
 
 function closeAlert() {
     document.getElementById('alert').style.display = 'none'
+}
+
+function newCad() {
+    window.location.href = './cadastro/index.html'
 }
