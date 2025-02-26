@@ -204,7 +204,7 @@ function preencheTabela() {
         button.classList.add('btn')
         button.textContent = 'Atribuir administrador' // Use textContent para definir o texto visível
         button.addEventListener("click", () => {
-            API.post(' /admin_role', { id: dataUserSearch[0].id, role: 'admin' }).then(() => {
+            API.post('/admin_role', { id: dataUserSearch[0].id, role: 'admin' }).then(() => {
                 alertCustomized('Atribuido com sucesso!! ', '30vw')
             }).catch(() => {
                 alertCustomized('Não foi possível atribuir', '30vw')
