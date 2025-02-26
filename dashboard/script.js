@@ -319,11 +319,15 @@ function openMenu() {
     isOpen = !isOpen
 }
 
-function opemFormMembreship() {
+function openFormMembreship() {
     if (confirm('Você possui membresia?')) {
         document.getElementById('formMembreship').style.display = 'flex'
         document.getElementsByName('mebresia')[0].value = dataUser[0].membresia.split('/')[0]
     }
+}
+
+function closeFormMembreship() {
+    document.getElementById('formMembreship').style.display = 'none'
 }
 
 function upMembreship(e) {

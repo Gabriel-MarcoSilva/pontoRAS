@@ -55,11 +55,12 @@
             <div style="height: 8vh;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <p>Nº Membresia: <span id="membresiaUser"></span></p>
-                    <button onclick="opemFormMembreship()" id="upMembreship">🖋️</button>
+                    <button onclick="openFormMembreship()" id="upMembreship">🖋️</button>
                 </div>
                 <form onsubmit="upMembreship(event)" id="formMembreship">
                     <input type="text" name="mebresia" maxlength="8">
                     <button type="submit">ok</button>
+                    <button onclick="closeFormMembreship()" type="button">cancelar</button>
                 </form>
             </div>
         </div>
