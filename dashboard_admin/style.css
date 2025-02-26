@@ -1,120 +1,96 @@
-* {
-    margin: 0;
-    box-sizing: border-box;
-    padding: 0;
-}
-
-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    flex-wrap: wrap;
-    background-color: #1b1b1b;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-}
-
-
-#container-dataUser {
-    position: absolute;
-    height: 100vh;
-    width: 30vw;
-    left: -30vw;
-    background-color: #1b1b1b;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    box-shadow: 5px 0px 10px rgb(138, 43, 226);
-}
-
-#openMenu {
-    top: 0;
-    left: 0;
-    width: 50px;
-    height: 50px;
-    margin: auto;
-    display: flex;
-    z-index: 1;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    background-color: #1b1b1b;
+.container {
+    width: 40vw !important;
     color: #fff;
-    position: absolute;
-    text-align: center;
-    font-family: sans-serif;
-    border-radius: 0 5px 5px 0;
-    font-size: 15pt;
-    box-shadow: 6px 0px 10px rgb(138, 43, 226);
 }
 
-#dataUser {
-    margin: auto;
+#container-admin {
+    width: 80vw !important;
+    height: 80vh !important;
+    padding: 10px;
+    color: #fff !important;
     display: flex;
     justify-content: space-around;
     flex-direction: column;
-    height: 30vh;
+}
+
+#menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 80vh;
     width: 100%;
-    font-family: sans-serif;
-}
-
-#dataUser p {
-    color: #fff;
-}
-
-#dataUser span {
-    color: rgb(138, 43, 226);
-}
-
-#upMembreship {
-    border: none;
-    padding: 0;
-    background-color: transparent;
-    cursor: pointer;
-}
-
-#upMembreship:hover {
-    filter: drop-shadow(0 0 15px rgb(138, 43, 226));
-    font-size: 12pt;
-}
-
-#formMembreship {
-    margin-top: 5px;
-    display: none;
-    align-items: center;
-}
-
-#formMembreship input {
-    height: 6vh;
-    width: 50%;
     border-radius: 5px;
-    border: 3px solid rgb(138, 43, 226);
-    color: rgb(138, 43, 226);
+    box-shadow: 0 0 20px rgb(138, 43, 226);
+}
+
+#menu button {
+    width: 80% !important;
+    margin: 20px auto;
+}
+
+#container-history {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    overflow-y: auto;
+    padding: 10px;
+    display: flex;
+    height: 60%;
+    justify-content: flex-start;
+}
+
+.history-item {
+    padding: 10px;
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.history-item:nth-child(even) {
+    background-color: white;
+    /* Branco */
+    color: #1b1b1b;
+}
+
+.history-item:nth-child(odd) {
+    background-color: transparent;
+    /* Transparente */
+}
+
+#select-admin {
+    width: 70%;
     padding: 5px 10px;
     font-weight: bold;
+    color: rgb(138, 43, 226);
+    border: 3px solid rgb(138, 43, 226);
+    border-radius: 5px;
 }
 
-#formMembreship button {
-    color: rgb(138, 43, 226);
+.btn {
     height: 6vh;
     min-width: 20%;
-    padding: 5px 15px;
-    margin: auto;
+    padding: 5px 10px;
     border: 3px solid rgb(138, 43, 226);
-    cursor: pointer;
-    font-weight: bold;
     background-color: #1b1b1b;
-    border-radius: 2px;
+    color: rgb(138, 43, 226);
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: capitalize;
 }
 
-#formMembreship button:hover {
-    color: #1b1b1b;
-    background-color: rgb(138, 43, 226);
+.btn:hover {
     border: 3px solid #1b1b1b;
+    background-color: rgb(138, 43, 226);
+    color: #1b1b1b;
+}
+
+#infoUser {
+    height: 30%;
+    display: flex;
+    padding: 20px;
+    justify-content: space-between;
 }
 
 @media (max-width: 400px) {
@@ -122,5 +98,23 @@ body {
     #container-dataUser {
         width: 70vw;
         left: -70vw;
+    }
+}
+
+@keyframes moveIn {
+    0% {
+        left: -80vw;
+    }
+
+    10% {
+        left: 0;
+    }
+
+    90% {
+        left: 0;
+    }
+
+    100% {
+        left: -80vw;
     }
 }

@@ -88,6 +88,52 @@ body {
     font-family: sans-serif;
 }
 
+div .setas {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-family: sans-serif;
+    color: #fff;
+    cursor: pointer;
+}
+
+doubleInput {
+    display: flex;
+    width: 75%;
+}
+
+.doubleInput label {
+    margin: 5px;
+    width: 100%;
+}
+
+#cadastro .doubleInput input,
+.oneLabel input {
+    width: 100%;
+    color: rgb(138, 43, 226);
+}
+
+.oneLabel {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px 0;
+}
+
+.oneLabel label {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 15px;
+}
+
+.oneLabel label p {
+    margin-right: 5px;
+}
+
+
 @keyframes moveIn {
     0% {
         left: -80vw;
