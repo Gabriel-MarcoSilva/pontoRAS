@@ -13,7 +13,7 @@ function loading() {
     }).catch(() => {
         console.log('api off')
     })
-    const verify = sessionStorage.getItem('token') && sessionStorage.getItem('timeInit')
+    const verify = localStorage.getItem('token') && localStorage.getItem('timeInit')
     if (!verify) {
         document.getElementById('formLogin').reset()
         document.getElementById('formCadastro').reset()
@@ -36,13 +36,13 @@ function login(e) {
     }
 
     API.post('/login', payload).then((res) => {
-        sessionStorage.setItem('token', res.data.accessToken)
+        localStorage.setItem('token', res.data.accessToken)
 
-        const horarioMarcado = sessionStorage.getItem('timeInit')
+        const horarioMarcado = localStorage.getItem('timeInit')
 
         if (horarioMarcado !== null || horarioMarcado !== undefined) {
             const hour = new Date()
-            sessionStorage.setItem('timeInit', (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0' + hour.getSeconds() : hour.getSeconds()))
+            localStorage.setItem('timeInit', (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0' + hour.getSeconds() : hour.getSeconds()))
         }
         window.location.href = "./dashboard/index.html";
     }).catch(() => {

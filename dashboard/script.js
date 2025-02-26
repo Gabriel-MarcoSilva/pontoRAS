@@ -22,7 +22,7 @@ const API = axios.create(
 )
 
 API.interceptors.request.use((config) => {
-    const token = sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`; // Corrigido "Bearer"
     }
@@ -32,7 +32,7 @@ API.interceptors.request.use((config) => {
 // implementear: se passou de 10 hr ele olha a localização
 
 function decodeToken() {
-    const token = sessionStorage.getItem('token')
+    const token = localStorage.getItem('token')
 
     try {
         const base64Url = token.split('.')[1]; // Pega a parte do payload (segundo bloco)
@@ -44,7 +44,7 @@ function decodeToken() {
                 .join('')
         );
 
-        sessionStorage.setItem('dataUser', jsonPayload)
+        localStorage.setItem('dataUser', jsonPayload)
 
         return JSON.parse(jsonPayload); // Retorna o objeto JSON decodificado
     } catch (e) {
@@ -54,7 +54,7 @@ function decodeToken() {
 }
 
 async function loading() {
-    const verify = sessionStorage.getItem('token');
+    const verify = localStorage.getItem('token');
     if (verify) {
         initTimer();
         await getDate();
@@ -76,7 +76,7 @@ async function loading() {
 async function loading2() {
     try {
         await obterLocalizacao(); // Aguarda a localização antes de continuar
-        const verify = sessionStorage.getItem('token');
+        const verify = localStorage.getItem('token');
 
         // Verifica se está dentro da margem de erro (ajuste se necessário)
         const margemErro = 0.01; // Ajuste esse valor conforme necessário
@@ -84,8 +84,8 @@ async function loading2() {
 
         if (local) {
             document.getElementById('btnParar').disabled = false;
-            if (!sessionStorage.getItem('timeInit')) {
-                sessionStorage.setItem('timeInit', (dataControle.getHours() < 10 ? '0' + dataControle.getHours() : dataControle.getHours()) + ':' + (dataControle.getMinutes() < 10 ? '0' + dataControle.getMinutes() : dataControle.getMinutes()) + ':' + (dataControle.getSeconds() < 10 ? '0' + dataControle.getSeconds() : dataControle.getSeconds()))
+            if (!localStorage.getItem('timeInit')) {
+                localStorage.setItem('timeInit', (dataControle.getHours() < 10 ? '0' + dataControle.getHours() : dataControle.getHours()) + ':' + (dataControle.getMinutes() < 10 ? '0' + dataControle.getMinutes() : dataControle.getMinutes()) + ':' + (dataControle.getSeconds() < 10 ? '0' + dataControle.getSeconds() : dataControle.getSeconds()))
             }
             if (verify) {
                 initTimer();
@@ -106,7 +106,7 @@ function logout() {
     const conf = segundos > 0 ? confirm('Deseja sair mesmo? Se sair agora seu progresso será perdido') : true
     if (conf) {
         window.location.href = "../index.html";
-        sessionStorage.clear()
+        localStorage.clear()
     }
 }
 
@@ -180,7 +180,7 @@ const formatDate = (date) => {
 };
 
 function initTimer() {
-    const hourMarked = sessionStorage.getItem('timeInit')
+    const hourMarked = localStorage.getItem('timeInit')
 
     const horaInicio = Number(hourMarked.split(':')[0])
     const minutoInicio = Number(hourMarked.split(':')[1])
@@ -224,7 +224,7 @@ function marcarHorario(e) {
     API.post('/horario', payload).then(() => {
         fecharPopUp()
         resetar()
-        sessionStorage.setItem('timeInit', payload.horario)
+        localStorage.setItem('timeInit', payload.horario)
         document.getElementById('formHorario').reset()
         document.getElementById('btnMarcarHorario').disabled = true
         alertCustomized('Registrado com sucesso!', '30vw')
