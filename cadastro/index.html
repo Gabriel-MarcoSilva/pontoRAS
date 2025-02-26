@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body onload="loading()">
+
+    <section class="container" id="cadastro">
+        <a onclick="newCad()" class="setas" style="justify-content: flex-start !important; cursor: pointer;">voltar</a>
+        <form id="formCadastro" onsubmit="cadastro(event)">
+            <div class="doubleInput">
+                <label>
+                    <p>Nome: *</p><input autocomplete="off" value="" type="text" placeholder="Nome" name="nome"
+                        oninput="updateCampo('nome')">
+                </label>
+                <label>
+                    <p>Telefone:<span style="font-size: 8pt;">(número apenas)</span>*</p>
+                    <input autocomplete="off" value="" type="text" placeholder="Telefone" name="telefone" maxlength="11"
+                        max="99999999999" min="00000000000" oninput="updateCampo('telefone')">
+                </label>
+            </div>
+            <div class="doubleInput">
+                <label>
+                    <p>Matrícula: <span style="font-size: 8pt;">(número apenas)</span>*</p><input autocomplete="off"
+                        value="" type="text" maxlength="10" placeholder="Matrícula" name="matricula"
+                        oninput="updateCampo('matricula')">
+                </label>
+                <label>
+                    <p>Curso: *</p><input autocomplete="off" value="" type="text" placeholder="Curso" name="curso"
+                        oninput="updateCampo('curso')">
+                </label>
+            </div>
+            <div class="oneLabel">
+                <label>
+                    <p>Nº Membresia: <span style="font-size: 8pt;">(opcional número apenas)</span></p><input
+                        autocomplete="off" value="" type="text" maxlength="8" placeholder="Membresia (opcional)"
+                        name="membresia" oninput="updateCampo('membresia')">
+                </label>
+            </div>
+            <div class="oneLabel">
+                <label>
+                    <p>Email: *</p><input autocomplete="off" value="" type="email" placeholder="Email" name="email"
+                        oninput="updateCampo('email')">
+                </label>
+            </div>
+            <div class="oneLabel">
+                <label>
+                    <p>Senha: *</p><input autocomplete="off" value="" type="password" placeholder="Senha"
+                        name="password" oninput="updateCampo('password')">
+                </label>
+            </div>
+            <button type="submit">Cadastrar</button>
+        </form>
+    </section>
+
+    <section id="openMenu" onclick="openMenu()">🔜</section>
+    <section id="container-dataUser">
+        <div id="dataUser">
+            <div style="margin-bottom: 15px;" id="acessoAdmin">
+                <hr>
+                <p style="text-align: end; cursor: pointer;" onclick="goToAdmin()">Voltar ao Ponto</p>
+                <hr>
+            </div>
+            <p>Nome: <span id="nameUser"></span></p>
+            <hr>
+            <p>Curso: <span id="cursoUser"></span></p>
+            <hr>
+            <p>Matrícula: <span id="matriculaUser"></span></p>
+            <hr>
+            <p>Seu tempo na C11: <span id="tempoC11"></span></p>
+            <hr>
+            <div style="height: 8vh;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <p>Nº Membresia: <span id="membresiaUser"></span></p>
+                    <button onclick="openFormMembreship()" id="upMembreship">🖋️</button>
+                </div>
+                <form method="get" onsubmit="upMembreship(event)" id="formMembreship">
+                    <input autocomplete="off" type="text" name="mebresia" maxlength="8">
+                    <button type="submit">ok</button>
+                    <button onclick="closeFormMembreship()" type="button">cancelar</button>
+                </form>
+            </div>
+        </div>
+    </section>
+    <section id="alert" style="display: none;"></section>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
