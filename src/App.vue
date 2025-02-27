@@ -1,3 +1,19 @@
+<template>
+  <Login />
+</template>
+
+<script>
+import Login from './components/Login.vue';
+
+export default {
+  name: 'App',
+  components: {
+    Login
+  }
+}
+</script>
+
+<style>
 * {
     padding: 0;
     margin: 0;
@@ -253,3 +269,4 @@ div .setas {
     background-color: rgb(138, 43, 226);
     border: 3px solid #1b1b1b;
 }
+</style>
