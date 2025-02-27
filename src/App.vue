@@ -1,15 +1,12 @@
 <template>
-  <Login />
+  <router-view />
 </template>
 
 <script>
-import Login from './components/Login.vue';
 
 export default {
   name: 'App',
-  components: {
-    Login
-  }
+  components: {}
 }
 </script>
 
@@ -175,6 +172,7 @@ div .setas {
     height: 100vh;
     width: 30vw;
     left: -30vw;
+    top: 0;
     background-color: #1b1b1b;
     display: flex;
     flex-direction: column;

@@ -1,9 +1,9 @@
 <template>
     <section class="container" id="login">
         <div>
-            <a onclick="newCad()" class="setas">sig in</a>
+            <a @click="newCad()" class="setas">sig in</a>
         </div>
-        <form id="formLogin" onsubmit="login(event)">
+        <form id="formLogin" method='get' @submit.prevent="login()">
             <div>
                 <img src="../assets/roboRAS.min.png" alt="roboRAS">
             </div>
@@ -11,91 +11,83 @@
                 <label style="display: flex; flex-direction: column; color: #fff;">
                     <p style="text-align: start; width: 70%; font-size: 10pt;">Matrícula: <span
                             style="font-size: 8pt;">(somente números)</span></p>
-                    <input name="matricula" type="text" placeholder="Matrícula" maxlength="10">
+                    <input v-model="matricula" name="matricula" type="text" placeholder="Matrícula" maxlength="10">
                 </label>
             </div>
             <div class="oneLabel">
                 <label style="display: flex; flex-direction: column; color: #fff;">
                     <p style="text-align: start; width: 70%; font-size: 10pt;">Senha:</p>
-                    <input name="senha" type="password" placeholder="Senha">
+                    <input v-model="senha" name="senha" type="password" placeholder="Senha">
                 </label>
             </div>
             <button type="submit">entrar</button>
         </form>
     </section>
-    <section id="alert" style="display: none;"></section>
+    <section id="alert" style="display: none;">
+        <p class="messageAlert" @key="message">{{ message }}</p>
+    </section>
     <section class="container" id="error" style="display: none;"></section>
 </template>
 
 <script>
 
-import API from '@/plugins/axios';
+import { decodeToken } from '@/plugins/auth';
+import { onAPI, setLogin } from '@/services';
 
 export default{
     name: 'ComponentLogin',
     data () {
         return {
+            matricula: '',
+            senha: '',
+            message: ''
         }
     },
     mouted () {
         this.loading()
     },
     methods: {
+        async loading() {
+            await onAPI()
 
-    loading() {
-        API.get('/').then(() => {
-            console.log('api on')
-            }).catch(() => {
-                console.log('api off')
-            })
             const verify = localStorage.getItem('token') && localStorage.getItem('timeInit')
             if (!verify) {
                 document.getElementById('formLogin').reset()
-                document.getElementById('formCadastro').reset()
+                localStorage.clear()
             } else {
-                window.location.href = "./dashboard/index.html";
+                this.$router.push('/inicio');
             }
         },
 
-        login(e) {
-            const form = document.getElementById('formLogin')
-
-            e.preventDefault()
-            const data = new FormData(form)
-
-            const dados = new URLSearchParams(data)
-
+        async login() {
             const payload = {
-                matricula: [...dados.values()][0],
-                senha: [...dados.values()][1],
+                matricula: this.matricula,
+                senha: this.senha
             }
 
-            API.post('/login', payload).then((res) => {
-                localStorage.setItem('token', res.data.accessToken)
+            const login = await setLogin(payload);
 
+            if (login.status) {
+                localStorage.setItem('token', login.accessToken)
                 const horarioMarcado = localStorage.getItem('timeInit')
-
                 if (horarioMarcado !== null || horarioMarcado !== undefined) {
                     const hour = new Date()
                     localStorage.setItem('timeInit', (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0' + hour.getSeconds() : hour.getSeconds()))
                 }
-                window.location.href = "./dashboard/index.html";
-            }).catch(() => {
+                decodeToken()
+                this.$router.push('/inicio')
+            } else {
                 this.alertCustomized('Matrícula e/ou senha incorretas', '20vw')
-            })
+            }
         },
 
         alertCustomized(message, size) {
             const alert = document.getElementById('alert')
-            alert.innerHTML = ""; // Limpa antes de renderizar
 
             alert.style.display = 'flex'
             alert.style.width = size
 
-            const p = document.createElement("p")
-            p.classList.add("messageAlert")
-            p.innerHTML = message
-            alert.appendChild(p)
+            this.message = message
 
             setInterval(() => {
                 alert.style.display = 'none'
@@ -107,7 +99,7 @@ export default{
         },
 
         newCad() {
-            window.location.href = './cadastro/index.html'
+            this.$router.push('/cadastro')
         }
     }
 }

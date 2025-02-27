@@ -1,59 +1,59 @@
 <template>
     <section class="container" id="cadastro">
-        <a onclick="newCad()" class="setas" style="justify-content: flex-start !important; cursor: pointer;">voltar</a>
-        <form id="formCadastro" onsubmit="cadastro(event)">
+        <a @click="newCad()" class="setas" style="justify-content: flex-start !important; cursor: pointer;">voltar</a>
+        <form id="formCadastro" @submit.prevent="cadastro()">
             <div class="doubleInput">
                 <label>
-                    <p>Nome: *</p><input autocomplete="off" value="" type="text" placeholder="Nome" name="nome"
-                        oninput="updateCampo('nome')">
+                    <p>Nome: *</p><input v-model="nome" autocomplete="off" value="" type="text" placeholder="Nome" name="nome"
+                        @input="updateCampo('nome')">
                 </label>
                 <label>
                     <p>Telefone:<span style="font-size: 8pt;">(número apenas)</span>*</p>
-                    <input autocomplete="off" value="" type="text" placeholder="Telefone" name="telefone" maxlength="11"
-                        max="99999999999" min="00000000000" oninput="updateCampo('telefone')">
+                    <input v-model="telefone" autocomplete="off" value="" type="text" placeholder="Telefone" name="telefone" maxlength="11"
+                        max="99999999999" min="00000000000" @input="updateCampo('telefone')">
                 </label>
             </div>
             <div class="doubleInput">
                 <label>
-                    <p>Matrícula: <span style="font-size: 8pt;">(número apenas)</span>*</p><input autocomplete="off"
+                    <p>Matrícula: <span style="font-size: 8pt;">(número apenas)</span>*</p><input v-model="matricula" autocomplete="off"
                         value="" type="text" maxlength="10" placeholder="Matrícula" name="matricula"
-                        oninput="updateCampo('matricula')">
+                        @input="updateCampo('matricula')">
                 </label>
                 <label>
-                    <p>Curso: *</p><input autocomplete="off" value="" type="text" placeholder="Curso" name="curso"
-                        oninput="updateCampo('curso')">
+                    <p>Curso: *</p><input v-model="curso" autocomplete="off" value="" type="text" placeholder="Curso" name="curso"
+                        @input="updateCampo('curso')">
                 </label>
             </div>
             <div class="oneLabel">
                 <label>
                     <p>Nº Membresia: <span
                             style="font-size: 8pt; word-wrap: break-word; overflow-wrap: break-word;">(opcional número
-                            apenas)</span></p><input autocomplete="off" value="" type="text" maxlength="8"
-                        placeholder="Membresia (opcional)" name="membresia" oninput="updateCampo('membresia')">
+                            apenas)</span></p><input v-model="membresia" autocomplete="off" value="" type="text" maxlength="8"
+                        placeholder="Membresia (opcional)" name="membresia" @input="updateCampo('membresia')">
                 </label>
             </div>
             <div class="oneLabel">
                 <label>
-                    <p>Email: *</p><input autocomplete="off" value="" type="email" placeholder="Email" name="email"
-                        oninput="updateCampo('email')">
+                    <p>Email: *</p><input v-model="email" autocomplete="off" value="" type="email" placeholder="Email" name="email"
+                        @input="updateCampo('email')">
                 </label>
             </div>
             <div class="oneLabel">
                 <label>
-                    <p>Senha: *</p><input autocomplete="off" value="" type="password" placeholder="Senha"
-                        name="password" oninput="updateCampo('password')">
+                    <p>Senha: *</p><input v-model="senha" autocomplete="off" value="" type="password" placeholder="Senha"
+                        name="password" @input="updateCampo('password')">
                 </label>
             </div>
             <button type="submit">Cadastrar</button>
         </form>
     </section>
 
-    <section id="openMenu" onclick="openMenu()">🔜</section>
-    <section id="container-dataUser">
+    <section id="openMenu" @click="openMenu()" v-if="dataUser.length > 0">🔜</section>
+    <section id="container-dataUser" v-if="dataUser.length > 0">
         <div id="dataUser">
             <div style="margin-bottom: 15px;" id="acessoAdmin">
                 <hr>
-                <p style="text-align: end; cursor: pointer;" onclick="goToAdmin()">Voltar ao Ponto</p>
+                <p style="text-align: end; cursor: pointer;" @click="goToAdmin()">Voltar ao Ponto</p>
                 <hr>
             </div>
             <p>Nome: <span id="nameUser"></span></p>
@@ -67,22 +67,25 @@
             <div style="height: 8vh;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <p>Nº Membresia: <span id="membresiaUser"></span></p>
-                    <button onclick="openFormMembreship()" id="upMembreship">🖋️</button>
+                    <button @click="openFormMembreship()" id="upMembreship">🖋️</button>
                 </div>
-                <form method="get" onsubmit="upMembreship(event)" id="formMembreship">
+                <form method="get" @submit.prevent="upMembreship(event)" id="formMembreship">
                     <input autocomplete="off" type="text" name="mebresia" maxlength="8">
                     <button type="submit">ok</button>
-                    <button onclick="closeFormMembreship()" type="button">cancelar</button>
+                    <button @click="closeFormMembreship()" type="button">cancelar</button>
                 </form>
             </div>
         </div>
     </section>
-    <section id="alert" style="display: none;"></section>
+    <section id="alert" style="display: none;">
+        <p class="messageAlert" @key="message">{{ message }}</p>
+    </section>
 </template>
 
 <script>
 
 import API from '@/plugins/axios';
+import { cadUser } from '@/services';
 
 export default {
     name: 'ComponentCadastro',
@@ -91,7 +94,17 @@ export default {
             isOpen :false,
             dataUser :[],
             widthScreen :0,
-            usuarioID :''
+            usuarioID :'',
+
+            nome: '',
+            email: '',
+            telefone: '',
+            matricula: '',
+            membresia: '',
+            curso: '',
+            senha: '',
+
+            message: ''
         }
     },
     mounted() {
@@ -99,20 +112,20 @@ export default {
     },
     methods: {
         async loading() {
+            if (localStorage.getItem('dataUser')) {
 
-            const dadosUser = JSON.parse(localStorage.getItem('dataUser'))
-            this.usuarioID = dadosUser.uid
+                const dadosUser = JSON.parse(localStorage.getItem('dataUser'))
+                this.usuarioID = dadosUser.uid
+    
+                this.dataUser = await API.get(`/usuario?id=${this.usuarioID}`).then(async (res) => {
+                    return await res.data
+                }).catch(() => {
+                    this.alertCustomized('Não foi possível conectar', '25vw')
+                })
 
-            this.dataUser = await API.get(`/usuario?id=${this.usuarioID}`).then(async (res) => {
-                return await res.data
-            }).catch((err) => {
-                this.alertCustomized('Não foi possível conectar', '25vw')
-            })
-
-            this.byTag('id', 'formCadastro').reset()
-
-            if (this.dataUser[0].role === 'admin') {
-                this.byTag('id', 'acessoAdmin').style.display = 'block'
+                console.log(this.dataUser)
+    
+                this.byTag('id', 'formCadastro').reset()
             }
         },
         byTag(type, tag) {
@@ -123,23 +136,17 @@ export default {
             }
         },
 
-        cadastro(e) {
-            const form = this.byTag('id', 'formCadastro')
-
-            e.preventDefault()
-            const data = new FormData(form)
-
-            const dados = new URLSearchParams(data)
-
+        async cadastro() {
+            
             const payload = {
-                nome: [...dados.values()][0],
-                telefone: [...dados.values()][1],
-                matricula: [...dados.values()][2],
-                curso: [...dados.values()][3],
-                membresia: [...dados.values()][4].length > 0 ? [...dados.values()][4] + '/ON' : '101010/OFF',
+                nome: this.nome,
+                telefone: this.telefone,
+                matricula: this.matricula,
+                curso: this.curso,
+                membresia: this.membresia !== '' ? this.membresia + '/ON' : '101010/OFF',
                 role: 'user',
-                email: [...dados.values()][5],
-                senha: [...dados.values()][6]
+                email: this.email,
+                senha: this.senha
             }
 
             const isEmpty = !payload.nome || !payload.telefone || !payload.matricula || !payload.curso || !payload.email || !payload.senha
@@ -181,15 +188,16 @@ export default {
                 this.byTag('name', 'email').style.borderColor = 'red'
                 this.byTag('name', 'password').style.borderColor = 'red'
                 this.alertCustomized('Campos não preenchidos', '30vw')
-
             }
 
-            API.post('/usuario', payload).then(() => {
+            const cad = await cadUser(payload)
+
+            if (cad) {
                 this.alertCustomized('Usuário cadastrado com sucesso!', '50vw')
-                newCad()
-            }).catch((err) => {
+                this.newCad()
+            } else {
                 this.alertCustomized('Não foi possível cadastrar o usuário', '60vw')
-            })
+            }
         },
 
          goToAdmin() {
@@ -203,8 +211,8 @@ export default {
             this.byTag('name', param).style.borderColor = 'rgb(138, 43, 226)'
         },
 
-         newCad() {
-            window.location.href = "../dashboard_admin/index.html";
+        newCad () {
+            this.$router.back()
         },
 
         openMenu() {
@@ -216,7 +224,7 @@ export default {
             this.byTag('id', 'membresiaUser').innerText = this.dataUser[0].membresia.split('/')[0]
 
 
-            if (!isOpen) {
+            if (!this.isOpen) {
                 this.byTag('id', 'container-dataUser').style.transform = `translateX(${this.widthScreen})`
                 this.byTag('id', 'openMenu').style.transform = `translateX(${this.widthScreen})`
                 this.byTag('id', 'openMenu').innerText = '🔙'
@@ -228,7 +236,7 @@ export default {
 
             this.byTag('id', 'openMenu').style.transition = '0.4s'
             this.byTag('id', 'container-dataUser').style.transition = '0.4s'
-            isOpen = !isOpen
+            this.isOpen = !this.isOpen
         },
 
         verifyScreen() {
