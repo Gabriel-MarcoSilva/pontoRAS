@@ -45,63 +45,21 @@
                 </div>
             </form>
         </div>
-    </section>
-
-    <section id="alert" style="display: none;">
-        <p class="messageAlert" @key="message">{{ message }}</p>
-    </section>
-
-    <section id="openMenu" @click="abrirMenu()">🔜</section>
-    <section id="container-dataUser">
-        <div id="dataUser">
-            <div style="margin-bottom: 15px;" id="acessoAdmin" v-if="isAdmin">
-                <hr>
-                <p style="text-align: end; cursor: pointer;" @click="goToAdmin()">Acesso Admin</p>
-                <hr>
-            </div>
-            <div v-for="item in dataUser" :key="item">
-                <p>Nome: <span id="nameUser">{{ item.nome }}</span></p>
-                <hr>
-                <p>Curso: <span id="cursoUser"> {{ item.curso }}</span></p>
-                <hr>
-                <p>Matrícula: <span id="matriculaUser"> {{ item.matricula }}</span></p>
-                <hr>
-                <p>Seu tempo na C11: <span id="tempoC11"> {{ auxTempoC11 }}</span></p>
-                <hr>
-                <div style="height: 8vh;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <p>Nº Membresia: <span id="membresiaUser">{{ item.membresia.split('/')[0] }}</span></p>
-                        <button onclick="openFormMembreship()" id="upMembreship">🖋️</button>
-                    </div>
-                    <form method="get" @submit.prevent="upMembreship(event)" id="formMembreship" v-if="isEditMembresia">
-                        <input v-model="membresia" type="text" name="mebresia" maxlength="8">
-                        <button type="submit">ok</button>
-                        <button @click="closeFormMembreship()" type="button">cancelar</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <Alert :message="message" :size="size" @close="this.message = ''" :key="message"/>
     </section>
 </template>
 
 <script>
-import Login from './Login.vue';
 
-import { openMenu } from '@/plugins/openMenu';
 import { decodeToken } from '@/plugins/auth';
-import { createRouter, createWebHistory } from "vue-router";
 import { buscaTimeUser, getDataUserLogged, setHorario, upMembresia } from '@/services';
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes: [
-    { path: "/login", component: Login }
-  ],
-});
+import Alert from './Alert.vue';
 
 export default {
-    router,
     name: 'ComponentDashboard',
+    components: {
+        Alert
+    },
     data () {
         return {
             nome: '',
@@ -126,6 +84,7 @@ export default {
             isEditMembresia: false,
 
             message: '',
+            size: 0,
             descricao: '',
             membresia: '',
             isOpenPopUp: false,
@@ -134,15 +93,14 @@ export default {
             disabledButtonHorario: false
         }
     },
-    mounted () {
-        const data  = JSON.parse(localStorage.getItem('dataUser'))
-        this.usuarioID = data.uid
+    async mounted () {
+        this.dados = await decodeToken()
+        this.usuarioID = this.dados.uid
+        this.nome = this.dados.nome
+
         this.loading()
     },
     methods: {
-        abrirMenu () {
-            this.isOpen = openMenu(this.isOpen)
-        },
         async loading() {
             const verify = localStorage.getItem('token');
             if (verify) {
@@ -220,9 +178,11 @@ export default {
                     this.historicoUser.data[i].horas = await this.formatarTempo(this.historicoUser.data[i].horas)
                 }
             } else if (this.historicoUser.data?.error) {
-                this.alertCustomized('Não há registros', '60vw')
+                this.message = 'Não há registros'
+                this.size = 60
             } else {
-                this.alertCustomized('Não foi possível ver seu histórico', '60vw')
+                this.message = 'Não foi possível ver seu histórico'
+                this.size = 60
             }
         },
 
@@ -258,10 +218,6 @@ export default {
             this.segundos = hora * 3600 + minuto * 60 + segundo
             this.tempoNaC11 = this.segundos
 
-            this.dados = await decodeToken()
-            this.usuarioID = this.dados.uid
-            this.nome = this.dados.nome
-
             if (!this.rodando) {
                 this.rodando = true;
                 this.intervalo = setInterval(() => {
@@ -288,13 +244,16 @@ export default {
                 localStorage.setItem('timeInit', payload.horario)
                 this.disableButton(true)
 
-                this.alertCustomized('Registrado com sucesso!', '30vw')
+                this.message = 'Registrado com sucesso!'
+                this.size = 30
+
                 this.fecharPopUp()
                 this.resetar()
                 this.descricao = ''
                 this.loading()
             } else {
-                this.alertCustomized('Coloque uma descrição', '30vw')
+                this.message = 'Coloque uma descrição'
+                this.size = 30
             }
         },
 
@@ -303,10 +262,11 @@ export default {
         },
 
         finishTimer() {
-            if (this.segundos > 10) {
+            if (this.segundos > 180) {
                 this.isOpenPopUp = true
             } else {
-                this.alertCustomized('Horário não cadastrado. Você ficou pouco tempo na C11', '50vw')
+                this.message = 'Horário não cadastrado. Você ficou pouco tempo na C11'
+                this.size = 60
             }
         },
 
@@ -320,19 +280,6 @@ export default {
             this.segundos = 0;
             this.rodando = false;
             this.atualizarDisplay();
-        },
-
-        alertCustomized(message, size) {
-            const alert = document.getElementById('alert')
-
-            alert.style.display = 'flex'
-            alert.style.width = size
-
-            this.message = message
-
-            setInterval(() => {
-                alert.style.display = 'none'
-            }, 7000);
         },
 
         habilityButton() {
@@ -353,12 +300,14 @@ export default {
                             resolve(); // Finaliza a Promise quando a localização é obtida
                         },
                         function(erro) {
-                            this.alertCustomized("Erro ao obter localização", "30vw")
+                            this.message = "Erro ao obter localização"
+                            this.size = 30
                             reject(erro);
                         }
                     );
                 } else {
-                    this.alertCustomized("Geolocalização não é suportada neste navegador.", '40vw');
+                    this.message = "Geolocalização não é suportada neste navegador."
+                    this.size = 40
                     reject(new Error("Geolocalização não suportada"));
                 }
             });
@@ -386,9 +335,11 @@ export default {
             if (upgrade.status) {
                 this.dataUser.membresia = payload.membresia
                 this.isEditMembresia = false
-                this.alertCustomized('Membresia atualizada com sucesso!', '30vw')
+                this.message = 'Membresia atualizada com sucesso!'
+                this.size = 30
             }else {
-                this.alertCustomized('Não foi possível atualizar sua membresia', '35vw')
+                this.message = 'Não foi possível atualizar sua membresia'
+                this.size = 35
             }
 
             

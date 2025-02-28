@@ -85,3 +85,20 @@ export async function buscaAdmin(matricula) {
         return []
     })
 }
+
+export async function attAdmin(id) {
+    return await API.post('/admin_role', { id: id, role: 'admin' }).then((res) => {
+        res.data.status = true
+        return res.data
+    }).catch((err) => {
+        return { status: false, error: err }
+    })
+}
+
+export async function removeUser(id) {
+    return await API.delete(`/admin_delete/${id}`).then(() => {
+        return { status: true }
+    }).catch(() => {
+        return { status: false }
+    })
+}

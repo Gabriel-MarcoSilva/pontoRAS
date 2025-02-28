@@ -105,6 +105,14 @@ export default{
 }
 </script>
 
-<style >
+<style scoped>
+    @media (max-width: 400px) {
+        .container {
+            width: 70vw;
+        }
 
+        .setas {
+            font-size: 8pt !important;
+        }
+    }
 </style>

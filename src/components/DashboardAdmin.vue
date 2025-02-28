@@ -1,15 +1,16 @@
 <template>
-    <section class="container" id="menu">
+    <section class="container" id="menu" v-if="!isBusca">
         <button type="button" @click="newCad()">Cadastrar novo Membro</button>
-        <button type="button" @click="openAdmin()">buscar Usuário</button>
+        <button type="button" @click="isBusca = !isBusca">buscar Usuário</button>
     </section>
 
-    <section class="container" id="container-admin" style="display: none;">
-        <a @click="openAdmin()" class="setas"
+    <section class="container" id="container-admin" v-else>
+        <a @click="isBusca = !isBusca" class="setas"
             style="justify-content: flex-start !important; cursor: pointer; margin-left: 5px;">voltar</a>
 
         <div style="width: 100%; display: flex; align-items: center; justify-content: space-around; height: 20%;">
             <select v-model="select" name="select" id="select-admin">
+                <option value="--" disabled>Selecione um usuário</option>
                 <option v-for="item in users" :key="item" :value="item.id">{{ item.nome }}</option>
             </select>
 
@@ -22,9 +23,14 @@
                 <p>Matricula: {{ matriculaUser }}</p>
                 <p>Tempo na C11: {{ tempoUser }}</p>
             </div>
-            <button @click="atribuirAdmin" class="btn" v-if="itsAdmin">
-                Atribuir Admin
-            </button>
+            <div class="container-button" v-if="nomeUser !== ''">
+                <button @click="atribuirAdmin" class="btn" v-if="itsAdmin">
+                    virar Admin
+                </button>
+                <button @click="removerUsuario" class="btn" v-if="!itsMe">
+                    Remover
+                </button>
+            </div>
         </div>
 
         <div id="container-history" class="box">
@@ -51,50 +57,20 @@
             </div>
     </section>
 
-    <section id="openMenu" @click="abrirMenu()">🔜</section>
-    <section id="container-dataUser">
-        <div id="dataUser">
-            <div style="margin-bottom: 15px;" id="acessoAdmin" v-if="isAdmin">
-                <hr>
-                <p style="text-align: end; cursor: pointer;" @click="goToAdmin()">Acesso Admin</p>
-                <hr>
-            </div>
-            <div v-for="item in dataUser" :key="item">
-                <p>Nome: <span id="nameUser">{{ item.nome }}</span></p>
-                <hr>
-                <p>Curso: <span id="cursoUser"> {{ item.curso }}</span></p>
-                <hr>
-                <p>Matrícula: <span id="matriculaUser"> {{ item.matricula }}</span></p>
-                <hr>
-                <p>Seu tempo na C11: <span id="tempoC11"> {{ auxTempoC11 }}</span></p>
-                <hr>
-                <div style="height: 8vh;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <p>Nº Membresia: <span id="membresiaUser">{{ item.membresia.split('/')[0] }}</span></p>
-                        <button @click="openFormMembreship()" id="upMembreship">🖋️</button>
-                    </div>
-                    <form method="get" @submit.prevent="upMembreship()" id="formMembreship" v-if="isEditMembresia">
-                        <input v-model="membresia" type="text" name="mebresia" maxlength="8">
-                        <button type="submit">ok</button>
-                        <button @click="closeFormMembreship()" type="button">cancelar</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section id="alert" style="display: none;">
-        <p class="messageAlert" @key="message">{{ message }}</p>
-    </section>
+    <Alert :message="message" :size="size" @close="this.message = ''" :key="message"/>
+
 </template>
 
 <script>
 
-import API from '@/plugins/axios';
-import { openMenu } from '@/plugins/openMenu';
-import { buscaAdmin, getAllUsers, getDataUserLogged, getHoras, upMembresia } from '@/services';
+import { attAdmin, buscaAdmin, getAllUsers, getDataUserLogged, getHoras, removeUser } from '@/services';
+import Alert from './Alert.vue';
 
 export default {
     name: 'DashboardAdmin',
+    components: {
+        Alert
+    },
     data () {
         return {
             isOpen: false,
@@ -111,82 +87,29 @@ export default {
             idUserSearch: '',
 
             message: '',
-            isAdmin: false,
-            select: '',
+            size: 0,
+            select: '--',
             users: [],
             membresia: '',
-
-            isEditMembresia: false,
-            auxTempoC11: 0
+            itsMe: false,
+            isBusca: false
         }
     },
-    mounted() {
-        this.loading()
+    async mounted() {
+        const dadosUser = JSON.parse(localStorage.getItem('dataUser'))
+        this.usuarioID = dadosUser.uid
+        this.membresia = dadosUser.membresia ?? ''
+        this.getUsers()
     },
     methods: {
-        async loading() {
-
-            const dadosUser = JSON.parse(localStorage.getItem('dataUser'))
-            this.usuarioID = dadosUser.uid
-            this.membresia = dadosUser.membresia ?? ''
-
-            this.dataUser = await getDataUserLogged(this.usuarioID)
-            this.isAdmin = this.dataUser[0].role === 'admin'
-        },
-
-        abrirMenu () {
-            this.isOpen = openMenu(this.isOpen)
-        },
-
-        openFormMembreship() {
-            if (confirm('Você possui membresia?')) {
-                this.isEditMembresia = true
-                this.membresia = this.dataUser[0].membresia.split('/')[0]
-            }
-        },
-
         closeFormMembreship() {
             this.byTag('id', 'formMembreship').style.display = 'none'
         },
-
-        async upMembreship() {
-            const payload = {
-                id: this.usuarioID,
-                membresia: this.membresia + '/ON',
-            }
-
-            const update = await upMembresia()
-
-            if(update.status) {
-                this.dataUser[0].membresia = payload.membresia
-                this.membresia = payload.membresia.split('/')[0]
-                this.isEditMembresia = false
-                this.alertCustomized('Membresia atualizada com sucesso!', '30vw')
-            } else {
-                this.alertCustomized('Não foi possível atualizar a membresia', '35vw')
-            }
-        },
-        goToAdmin() {
-            this.$router.back()
-        }
-
-
-        ,async addSelect() {
+        
+        async getUsers () {
             this.users = await getAllUsers()
-            console.log(this.users)
         },
 
-        async openAdmin() {
-            if (this.byTag('id', 'container-admin').style.display == 'flex') {
-                this.byTag('id', 'menu').style.display = 'flex'
-                this.byTag('id', 'container-admin').style.display = 'none'
-
-            } else {
-                this.byTag('id', 'menu').style.display = 'none'
-                this.byTag('id', 'container-admin').style.display = 'flex'
-                await this.addSelect()
-            }
-        },
         byTag(type, tag) {
             if (type == 'id') {
                 return document.getElementById(tag)
@@ -194,23 +117,32 @@ export default {
                 return document.getElementsByName(tag)[0]
             }
         },
+        
         newCad() {
             this.$router.push('/cadastro')
         },
-        async buscarUser() {
 
+        async buscarUser() {
             if (this.select !== '--') {
+                this.itsMe = this.select === this.usuarioID
                 this.dataUserSearch = await getDataUserLogged(this.select)
 
                 this.tempoUser = await getHoras(this.dataUserSearch[0].id)
 
-                if (this.tempoUser !== 0) {
+                if (this.tempoUser !== '00:00:00') {
                     this.historicoUser = await buscaAdmin(this.dataUserSearch[0].matricula)
+                    for (let i = 0; i < this.historicoUser.length; i++) {
+                        this.historicoUser[i].data = await this.dateVisual(this.historicoUser[i].data)
+                        this.historicoUser[i].horas = await this.formatarTempo(this.historicoUser[i].horas)
+                    }
+                } else {
+                    this.historicoUser = []
                 }
 
                 this.preencheTabela()
             }
         },
+
         preencheTabela() {
             this.nomeUser = this.dataUserSearch[0].nome
             this.matriculaUser = this.dataUserSearch[0].matricula
@@ -218,13 +150,22 @@ export default {
             this.itsAdmin = this.dataUserSearch[0].role !== 'admin'
             this.idUserSearch = this.dataUserSearch[0].id
         },
-        atribuirAdmin () {
-            API.post('/admin_role', { id: this.idUserSearch, role: 'admin' }).then(() => {
-                this.alertCustomized('Atribuido com sucesso!! ', '30vw')
-            }).catch(() => {
-                this.alertCustomized('Não foi possível atribuir', '30vw')
-            })
+
+        async atribuirAdmin () {
+            if (confirm('Deseja atribuir administrador a este usuário? ')) {
+                const att = await attAdmin(this.idUserSearch)
+    
+                if(att.status) {
+                    this.message = 'Atribuido com sucesso!! '
+                    this.size = 30
+                    this.itsAdmin = true
+                }else {
+                    this.message = 'Não foi possível atribuir'
+                    this.size = 30
+                }
+            }
         },
+
         dateVisual(date) {
             const data = date.split('T')[0]
 
@@ -233,6 +174,7 @@ export default {
             const ano = data.split('-')[0]
             return dia + '/' + mes + '/' + ano
         },
+
         formatarTempo(segundos) {
             let horas = Math.floor(segundos / 3600);
             let minutos = Math.floor((segundos % 3600) / 60);
@@ -243,21 +185,22 @@ export default {
                 String(seg).padStart(2, '0')
             );
         },
-        alertCustomized(message, size) {
-            const alert = document.getElementById('alert')
-            alert.innerHTML = ""; // Limpa antes de renderizar
 
-            alert.style.display = 'flex'
-            alert.style.width = size
-
-            const p = document.createElement("p")
-            p.classList.add("messageAlert")
-            p.innerHTML = message
-            alert.appendChild(p)
-
-            setInterval(() => {
-                alert.style.display = 'none'
-            }, 7000);
+        async removerUsuario () {
+            if (confirm('Deseja remover este usuário?')) {
+                const deleteUser = await removeUser(this.select)
+                if (deleteUser) {
+                    this.message = 'Usuário removido com sucesso!'
+                    this.size = 20
+                    this.getUsers()
+                    this.select = '--'
+                    this.nomeUser = ''
+                    this.historicoUser = []
+                } else {
+                    this.message = 'Não foi possível remover o uusário'
+                    this.size = 30
+                }
+            }
         }
     }
 }
@@ -359,11 +302,45 @@ export default {
     justify-content: space-between;
 }
 
+.container-button {
+    display: flex;
+    width: 30%;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.container-button button{
+    width: 100%;
+}   
+
 @media (max-width: 400px) {
 
     #container-dataUser {
         width: 70vw;
         left: -70vw;
+    }
+
+    .container {
+        width: 70vw !important;
+    }
+
+    #infoUser {
+        flex-direction: column;
+        font-size: 10pt !important;
+        justify-content: space-around;
+    }
+
+    #infoUser button {
+        margin: 5px;
+    }
+
+    .container-button {
+        width: 100%;
+        flex-direction: row;
+    } 
+
+    .history-item {
+        font-size: 10pt !important;
     }
 }
 

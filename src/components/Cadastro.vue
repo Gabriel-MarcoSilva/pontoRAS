@@ -4,7 +4,8 @@
         <form id="formCadastro" @submit.prevent="cadastro()">
             <div class="doubleInput">
                 <label>
-                    <p>Nome: *</p><input v-model="nome" autocomplete="off" value="" type="text" placeholder="Nome" name="nome"
+                    <p>Nome: *</p>
+                    <input v-model="nome" autocomplete="off" value="" type="text" placeholder="Nome" name="nome"
                         @input="updateCampo('nome')">
                 </label>
                 <label>
@@ -15,83 +16,50 @@
             </div>
             <div class="doubleInput">
                 <label>
-                    <p>Matrícula: <span style="font-size: 8pt;">(número apenas)</span>*</p><input v-model="matricula" autocomplete="off"
+                    <p>Matrícula: <span style="font-size: 8pt;">(número apenas)</span>*</p>
+                    <input v-model="matricula" autocomplete="off"
                         value="" type="text" maxlength="10" placeholder="Matrícula" name="matricula"
                         @input="updateCampo('matricula')">
                 </label>
                 <label>
-                    <p>Curso: *</p><input v-model="curso" autocomplete="off" value="" type="text" placeholder="Curso" name="curso"
+                    <p>Curso: *</p>
+                    <input v-model="curso" autocomplete="off" value="" type="text" placeholder="Curso" name="curso"
                         @input="updateCampo('curso')">
                 </label>
             </div>
-            <div class="oneLabel">
-                <label>
-                    <div>
-                        <p>Nº Membresia:</p>
-                    <span style="font-size: 8pt; word-wrap: break-word; overflow-wrap: break-word;">(opcional números apenas)</span>
-                    </div>
-                    <input v-model="membresia" autocomplete="off" value="" type="text" maxlength="8" style="width: 60%; margin-left: 5px;"
-                        placeholder="Membresia (opcional)" name="membresia" @input="updateCampo('membresia')">
-                </label>
-            </div>
-            <div class="oneLabel">
-                <label>
-                    <p>Email: *</p><input v-model="email" autocomplete="off" value="" type="email" placeholder="Email" name="email"
-                        @input="updateCampo('email')">
-                </label>
-            </div>
-            <div class="oneLabel">
-                <label>
-                    <p>Senha: *</p><input v-model="senha" autocomplete="off" value="" type="password" placeholder="Senha"
-                        name="password" @input="updateCampo('password')">
-                </label>
-            </div>
+            <label class="oneInput">
+                    <p>Nº Membresia:
+                        <span style="font-size: 8pt; word-wrap: break-word; overflow-wrap: break-word;">(opcional números apenas)</span>
+                    </p>
+                <input v-model="membresia" autocomplete="off" value="" type="text" maxlength="8"
+                    placeholder="Membresia (opcional)" name="membresia" @input="updateCampo('membresia')">
+            </label>
+            <label class="oneInput">
+                <p>Email: *</p><input v-model="email" autocomplete="off" value="" type="email" placeholder="Email" name="email"
+                    @input="updateCampo('email')">
+            </label>
+            <label class="oneInput">
+                <p>Senha: *</p><input v-model="senha" autocomplete="off" value="" type="password" placeholder="Senha"
+                    name="password" @input="updateCampo('password')">
+            </label>
             <button type="submit">Cadastrar</button>
         </form>
     </section>
+    <Alert :message="message" :size="size" @close="this.message = ''" :key="message"/>
 
-    <section id="openMenu" @click="abrirMennu()" v-if="dataUser.length > 0">🔜</section>
-    <section id="container-dataUser" v-if="dataUser.length > 0">
-        <div id="dataUser">
-            <div style="margin-bottom: 15px;" id="acessoAdmin">
-                <hr>
-                <p style="text-align: end; cursor: pointer;" @click="goToAdmin()">Voltar ao Ponto</p>
-                <hr>
-            </div>
-            <p>Nome: <span id="nameUser"></span></p>
-            <hr>
-            <p>Curso: <span id="cursoUser"></span></p>
-            <hr>
-            <p>Matrícula: <span id="matriculaUser"></span></p>
-            <hr>
-            <p>Seu tempo na C11: <span id="tempoC11"></span></p>
-            <hr>
-            <div style="height: 8vh;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <p>Nº Membresia: <span id="membresiaUser"></span></p>
-                    <button @click="openFormMembreship()" id="upMembreship">🖋️</button>
-                </div>
-                <form method="get" @submit.prevent="upMembreship(event)" id="formMembreship">
-                    <input autocomplete="off" type="text" name="mebresia" maxlength="8">
-                    <button type="submit">ok</button>
-                    <button @click="closeFormMembreship()" type="button">cancelar</button>
-                </form>
-            </div>
-        </div>
-    </section>
-    <section id="alert" style="display: none;">
-        <p class="messageAlert" @key="message">{{ message }}</p>
-    </section>
 </template>
 
 <script>
 
 import API from '@/plugins/axios';
-import { openMenu } from '@/plugins/openMenu';
 import { cadUser } from '@/services';
+import Alert from './Alert.vue';
 
 export default {
     name: 'ComponentCadastro',
+    components: {
+        Alert
+    },
     data () {
         return {
             isOpen :false,
@@ -107,7 +75,8 @@ export default {
             curso: '',
             senha: '',
 
-            message: ''
+            message: '',
+            size: 0
         }
     },
     mounted() {
@@ -203,40 +172,19 @@ export default {
             }
         },
 
-         goToAdmin() {
-            window.location.href = "../dashboard/index.html";
-        },
-
          updateCampo(param) {
             if (param == 'telefone') {
-                this.byTag('name', param).value = this.byTag('name', 'telefone').value.replace(/\D/g, '')
+                this.telefone = this.telefone.replace(/\D/g, '')
+            } else if (param == 'membresia') {
+                this.membresia = this.membresia.replace(/\D/g, '')
+            } else if (param == 'matricula' ) {
+                this.matricula = this.matricula.replace(/\D/g, '')
             }
             this.byTag('name', param).style.borderColor = 'rgb(138, 43, 226)'
         },
 
         newCad () {
             this.$router.back()
-        },
-
-        abrirMenu () {
-            this.isOpen = openMenu(this.isOpen)
-        },
-
-        alertCustomized(message, size) {
-            const alert = this.byTag('id', 'alert')
-            alert.innerHTML = ""; // Limpa antes de renderizar
-
-            alert.style.display = 'flex'
-            alert.style.width = size
-
-            const p = document.createElement("p")
-            p.classList.add("messageAlert")
-            p.innerHTML = message
-            alert.appendChild(p)
-
-            setInterval(() => {
-                alert.style.display = 'none'
-            }, 7000);
         }
     }
 }
@@ -263,4 +211,72 @@ div .setas {
     align-items: center;
     margin-top: 15px;
 }
+
+.doubleInput,
+.oneInput {
+    display: flex;
+    justify-content: space-between;
+    width: 70%;
+}
+
+.oneInput {
+    flex-direction: column;
+}
+
+.doubleInput label {
+    width: 100%;
+}
+
+.doubleInput label input{
+    width: 95%;
+}
+
+.oneInput input {
+    width: 97%;
+}
+
+@media (max-width: 400px) {
+    .setas{
+        font-size: 8pt;
+    }
+
+    #cadastro {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    #formCadastro {
+        height: 90%;
+        width: 100%;
+    }
+
+    .doubleInput {
+        flex-direction: column;
+    }
+
+    .oneInput,
+    .doubleInput {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .oneInput p,
+    .doubleInput label p,
+    #formCadastro button {
+        font-size: 8pt;
+    }
+
+    .oneInput span,
+    .doubleInput label span {
+        font-size: 5pt !important;
+    }
+
+    .oneInput input,
+    .doubleInput label input {
+        height: 5vh;
+        font-size: 8pt;
+        padding: 3px;
+    }
+}
+
 </style>
