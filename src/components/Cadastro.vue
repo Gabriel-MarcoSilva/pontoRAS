@@ -95,8 +95,6 @@ export default {
                     this.alertCustomized('Não foi possível conectar', '25vw')
                 })
 
-                console.log(this.dataUser)
-    
                 this.byTag('id', 'formCadastro').reset()
             }
         },
