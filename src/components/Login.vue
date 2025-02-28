@@ -23,9 +23,8 @@
             <button type="submit">entrar</button>
         </form>
     </section>
-    <section id="alert" style="display: none;">
-        <p class="messageAlert" @key="message">{{ message }}</p>
-    </section>
+    <Alert :message="message" :size="size" @close="this.message = ''" :key="message"/>
+
     <section class="container" id="error" style="display: none;"></section>
 </template>
 
@@ -33,14 +32,19 @@
 
 import { decodeToken } from '@/plugins/auth';
 import { onAPI, setLogin } from '@/services';
+import Alert from './Alert.vue';
 
 export default{
     name: 'ComponentLogin',
+    components: {
+        Alert
+    },
     data () {
         return {
             matricula: '',
             senha: '',
-            message: ''
+            message: '',
+            size: 0
         }
     },
     mouted () {
@@ -77,25 +81,9 @@ export default{
                 decodeToken()
                 this.$router.push('/inicio')
             } else {
-                this.alertCustomized('Matrícula e/ou senha incorretas', '20vw')
+                this.message = 'Matrícula e/ou senha incorretas'
+                this.size = 20
             }
-        },
-
-        alertCustomized(message, size) {
-            const alert = document.getElementById('alert')
-
-            alert.style.display = 'flex'
-            alert.style.width = size
-
-            this.message = message
-
-            setInterval(() => {
-                alert.style.display = 'none'
-            }, 7000);
-        },
-
-        closeAlert() {
-            document.getElementById('alert').style.display = 'none'
         },
 
         newCad() {

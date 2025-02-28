@@ -92,7 +92,8 @@ export default {
                 this.dataUser = await API.get(`/usuario?id=${this.usuarioID}`).then(async (res) => {
                     return await res.data
                 }).catch(() => {
-                    this.alertCustomized('Não foi possível conectar', '25vw')
+                    this.message = 'Não foi possível conectar'
+                    this.size = 25
                 })
 
                 this.byTag('id', 'formCadastro').reset()
@@ -123,21 +124,24 @@ export default {
 
             if (!isEmpty) {
                 if (payload.telefone.length < 11) {
-                    this.alertCustomized('Número de telefone inválido', '35vw')
+                    this.message = 'Número de telefone inválido'
+                    this.size = 35
                     this.byTag('name', 'telefone').style.borderColor = 'red'
                 } else {
                     this.byTag('name', 'telefone').style.borderColor = 'rgb(138, 43, 226)'
                 }
 
                 if (payload.matricula.length < 9) {
-                    this.alertCustomized('Número de matrícula inválido', '35vw')
+                    this.message = 'Número de matrícula inválido'
+                    this.size = 35
                     this.byTag('name', 'matricula').style.borderColor = 'red'
                 } else {
                     this.byTag('name', 'matricula').style.borderColor = 'rgb(138, 43, 226)'
                 }
 
                 if (payload.membresia && payload.membresia.length < 7) {
-                    this.alertCustomized('Número de membresia inválido', '35vw')
+                    this.message = 'Número de membresia inválido'
+                    this.size = 35
                     this.byTag('name', 'membresia').style.borderColor = 'red'
 
                 } else {
@@ -145,7 +149,8 @@ export default {
                 }
 
                 if (!payload.email.match('@') && (!payload.email.match('.com') || !payload.email.match('.br'))) {
-                    this.alertCustomized('Email inválido', '20vw')
+                    this.message = 'Email inválido'
+                    this.size = 20
                     this.byTag('name', 'email').style.borderColor = 'red'
                 } else {
                     this.byTag('name', 'email').style.borderColor = 'rgb(138, 43, 226)'
@@ -157,16 +162,19 @@ export default {
                 this.byTag('name', 'matricula').style.borderColor = 'red'
                 this.byTag('name', 'email').style.borderColor = 'red'
                 this.byTag('name', 'password').style.borderColor = 'red'
-                this.alertCustomized('Campos não preenchidos', '30vw')
+                this.message = 'Campos não preenchidos'
+                this.size = 30
             }
 
             const cad = await cadUser(payload)
 
             if (cad) {
-                this.alertCustomized('Usuário cadastrado com sucesso!', '50vw')
+                this.message = 'Usuário cadastrado com sucesso!'
+                this.size = 50
                 this.newCad()
             } else {
-                this.alertCustomized('Não foi possível cadastrar o usuário', '60vw')
+                this.message = 'Não foi possível cadastrar o usuário'
+                this.size = 60
             }
         },
 

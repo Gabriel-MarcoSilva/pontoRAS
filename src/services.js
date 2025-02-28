@@ -54,11 +54,10 @@ export async function upMembresia(payload) {
 }
 
 export async function cadUser(payload) {
-    return await API.post('/usuario', payload).then((res) => {
-        res.status = true
-        return res.status
-    }).catch((err) => {
-        return { status: false, error: err }
+    return await API.post('/usuario', payload).then(() => {
+        return true
+    }).catch(() => {
+        return false
     })
 }
 
