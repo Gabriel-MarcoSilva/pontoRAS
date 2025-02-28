@@ -9,48 +9,76 @@
             style="justify-content: flex-start !important; cursor: pointer; margin-left: 5px;">voltar</a>
 
         <div style="width: 100%; display: flex; align-items: center; justify-content: space-around; height: 20%;">
-            <select name="select" id="select-admin">
+            <select v-model="select" name="select" id="select-admin">
+                <option v-for="item in users" :key="item" :value="item.id">{{ item.nome }}</option>
             </select>
 
             <button type="button" @click="buscarUser()" class="btn">buscar</button>
         </div>
 
         <div id="infoUser">
+            <div v-if="nomeUser !== ''">
+                <p>Nome: {{ nomeUser }}</p>
+                <p>Matricula: {{ matriculaUser }}</p>
+                <p>Tempo na C11: {{ tempoUser }}</p>
+            </div>
+            <button @click="atribuirAdmin" class="btn" v-if="itsAdmin">
+                Atribuir Admin
+            </button>
         </div>
 
         <div id="container-history" class="box">
-            <div
-                style="display: flex; align-items: center; justify-content: center; height: 100%; width: 100%; text-transform: capitalize;">
-                histórico</div>
-        </div>
+                <div v-if="this.historicoUser?.error">
+                    {{ this.historicoUser.error }}
+                </div>
+                <div v-else style="width: 100%;">
+                    <div class="history-item" v-for="item in historicoUser" :key="item">
+                        <div style="display: grid; grid-template-columns: repeat(3, 33%); gap: 1%; width: 100%;">
+                            <p>
+                                Data: {{ item.data }}
+                            </p>
+                            <p>
+                                Tempo: {{ item.horas }}
+                            </p>
+                            <p>
+                                Horário: {{ item.horario }}
+                            </p>
+                        </div>
+                        <br />
+                        Descrição: {{ item.descricao }}
+                    </div>
+                </div>
+            </div>
     </section>
 
-    <section id="openMenu" @click="openMenu()">🔜</section>
-    <section id="container-this.dataUser">
-        <div id="this.dataUser">
-            <div style="margin-bottom: 15px;" id="acessoAdmin">
+    <section id="openMenu" @click="abrirMenu()">🔜</section>
+    <section id="container-dataUser">
+        <div id="dataUser">
+            <div style="margin-bottom: 15px;" id="acessoAdmin" v-if="isAdmin">
                 <hr>
-                <p style="text-align: end; cursor: pointer;" v-if="isAdmin" @click="goToAdmin()">Voltar ao Dashboard</p>
+                <p style="text-align: end; cursor: pointer;" @click="goToAdmin()">Acesso Admin</p>
                 <hr>
             </div>
-            <p>Nome: <span id="nameUser"></span></p>
-            <hr>
-            <p>Curso: <span id="cursoUser"></span></p>
-            <hr>
-            <p>Matrícula: <span id="matriculaUser"></span></p>
-            <hr>
-            <p>Seu tempo na C11: <span id="tempoC11"></span></p>
-            <hr>
-            <div style="height: 8vh;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <p>Nº Membresia: <span id="membresiaUser"></span></p>
-                    <button @click="openFormMembreship()" id="upMembreship">🖋️</button>
+            <div v-for="item in dataUser" :key="item">
+                <p>Nome: <span id="nameUser">{{ item.nome }}</span></p>
+                <hr>
+                <p>Curso: <span id="cursoUser"> {{ item.curso }}</span></p>
+                <hr>
+                <p>Matrícula: <span id="matriculaUser"> {{ item.matricula }}</span></p>
+                <hr>
+                <p>Seu tempo na C11: <span id="tempoC11"> {{ auxTempoC11 }}</span></p>
+                <hr>
+                <div style="height: 8vh;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <p>Nº Membresia: <span id="membresiaUser">{{ item.membresia.split('/')[0] }}</span></p>
+                        <button @click="openFormMembreship()" id="upMembreship">🖋️</button>
+                    </div>
+                    <form method="get" @submit.prevent="upMembreship()" id="formMembreship" v-if="isEditMembresia">
+                        <input v-model="membresia" type="text" name="mebresia" maxlength="8">
+                        <button type="submit">ok</button>
+                        <button @click="closeFormMembreship()" type="button">cancelar</button>
+                    </form>
                 </div>
-                <form method="get" @submit.prevent="upMembreship(event)" id="formMembreship">
-                    <input autocomplete="off" type="text" name="mebresia" maxlength="8">
-                    <button type="submit">ok</button>
-                    <button @click="closeFormMembreship()" type="button">cancelar</button>
-                </form>
             </div>
         </div>
     </section>
@@ -62,7 +90,8 @@
 <script>
 
 import API from '@/plugins/axios';
-import { getDataUserLogged } from '@/services';
+import { openMenu } from '@/plugins/openMenu';
+import { buscaAdmin, getAllUsers, getDataUserLogged, getHoras, upMembresia } from '@/services';
 
 export default {
     name: 'DashboardAdmin',
@@ -74,237 +103,162 @@ export default {
             usuarioID: '',
             historicoUser: [],
             dataUserSearch: [],
-            tempoUser: 0,
+            
+            tempoUser: '00:00:00',
+            nomeUser: '',
+            matriculaUser: '',
+            itsAdmin: false,
+            idUserSearch: '',
 
             message: '',
-            isAdmin: false
+            isAdmin: false,
+            select: '',
+            users: [],
+            membresia: '',
+
+            isEditMembresia: false,
+            auxTempoC11: 0
         }
     },
     mounted() {
         this.loading()
     },
     methods: {
-async loading() {
+        async loading() {
 
-    const dadosUser = JSON.parse(localStorage.getItem('dataUser'))
-    this.usuarioID = dadosUser.uid
+            const dadosUser = JSON.parse(localStorage.getItem('dataUser'))
+            this.usuarioID = dadosUser.uid
+            this.membresia = dadosUser.membresia ?? ''
 
-    this.dataUser = await getDataUserLogged(this.usuarioID)
-    this.isAdmin = this.dataUser[0].role === 'admin'
-},
-openMenu() {
-    this.verifyScreen()
+            this.dataUser = await getDataUserLogged(this.usuarioID)
+            this.isAdmin = this.dataUser[0].role === 'admin'
+        },
 
-    this.byTag('id', 'nameUser').innerText = this.dataUser[0].nome
-    this.byTag('id', 'cursoUser').innerText = this.dataUser[0].curso
-    this.byTag('id', 'matriculaUser').innerText = this.dataUser[0].matricula
-    this.byTag('id', 'membresiaUser').innerText = this.dataUser[0].membresia.split('/')[0]
+        abrirMenu () {
+            this.isOpen = openMenu(this.isOpen)
+        },
 
-    if (!this.isOpen) {
-        this.byTag('id', 'container-this.dataUser').style.transform = `translateX(${this.widthScreen})`
-        this.byTag('id', 'openMenu').style.transform = `translateX(${this.widthScreen})`
-        this.byTag('id', 'openMenu').innerText = '🔙'
-    } else {
-        this.byTag('id', 'container-this.dataUser').style.transform = 'translateX(0)'
-        this.byTag('id', 'openMenu').style.transform = 'translateX(0)'
-        this.byTag('id', 'openMenu').innerText = '🔜'
-    }
+        openFormMembreship() {
+            if (confirm('Você possui membresia?')) {
+                this.isEditMembresia = true
+                this.membresia = this.dataUser[0].membresia.split('/')[0]
+            }
+        },
 
-    this.byTag('id', 'openMenu').style.transition = '0.4s'
-    this.byTag('id', 'container-this.dataUser').style.transition = '0.4s'
-    this.isOpen = !this.isOpen
-},
-verifyScreen() {
-    if (window.screen.width <= 400) {
-        this.widthScreen = '70vw'
-    } else {
-        this.widthScreen = '30vw'
-    }
-},
-openFormMembreship() {
-    if (confirm('Você possui membresia?')) {
-        this.byTag('id', 'formMembreship').style.display = 'flex'
-        this.byTag('name', 'mebresia').value = this.dataUser[0].membresia.split('/')[0]
-    }
-},
-closeFormMembreship() {
-    this.byTag('id', 'formMembreship').style.display = 'none'
-},
-upMembreship(e) {
-    const form = this.byTag('id', 'formMembreship')
+        closeFormMembreship() {
+            this.byTag('id', 'formMembreship').style.display = 'none'
+        },
 
-    e.preventDefault()
-    const data = new FormData(form)
+        async upMembreship() {
+            const payload = {
+                id: this.usuarioID,
+                membresia: this.membresia + '/ON',
+            }
 
-    const dados = new URLSearchParams(data)
+            const update = await upMembresia()
 
-    const payload = {
-        id: this.usuarioID,
-        membresia: [...dados.values()][0] + '/ON',
-    }
-
-    API.post('/upmembresia', payload).then(() => {
-        this.dataUser[0].membresia = payload.membresia
-        this.byTag('id', 'membresiaUser').innerText = payload.membresia.split('/')[0]
-        this.byTag('id', 'formMembreship').style.display = 'none'
-        this.alertCustomized('Membresia atualizada com sucesso!', '30vw')
-    }).catch(() => {
-        this.alertCustomized('Não foi possível atualizar a membresia', '35vw')
-    })
-},
-goToAdmin() {
-    this.$router.back()
-}
-
-
-,async addSelect() {
-    const select = this.byTag('id', 'select-admin')
-
-    try {
-        const users = await API.get('/usuario').then(res => res.data)
-        const option = document.createElement("option")
-        option.value = '--' // Define o valor da opção
-        option.textContent = 'Selecione o usuário' // Define o texto visível
-        select.appendChild(option)
-
-        for (let i = 0; i < users.length; i++) {
-            const option = document.createElement("option")
-            option.value = users[i].id // Define o valor da opção
-            option.textContent = users[i].nome // Define o texto visível
-            select.appendChild(option)
-        }
-    } catch (err) {
-        this.alertCustomized("Erro ao buscar usuários:", "30vw")
-    }
-},
-
-async openAdmin() {
-    if (this.byTag('id', 'container-admin').style.display == 'flex') {
-        this.byTag('id', 'menu').style.display = 'flex'
-        this.byTag('id', 'container-admin').style.display = 'none'
-
-    } else {
-        this.byTag('id', 'menu').style.display = 'none'
-        this.byTag('id', 'container-admin').style.display = 'flex'
-        await this.addSelect()
-    }
-},
-byTag(type, tag) {
-    if (type == 'id') {
-        return document.getElementById(tag)
-    } else if (type == 'name') {
-        return document.getElementsByName(tag)[0]
-    }
-},
-newCad() {
-    this.$router.push('/cadastro')
-},
-async buscarUser() {
-    const select = this.byTag('id', 'select-admin').value
-
-    if (select !== '--') {
-        this.dataUserSearch = await API.get(`/usuario?id=${select}`).then((res) => {
-            return res.data
-        }).catch((err) => {
-            console.error(err)
-        })
-
-        this.tempoUser = await API.get(`/calcular?usuarioId=${this.dataUserSearch[0].id}`).then((res) => {
-            return res.data
-        }).catch(() => {
-            return 0
-        })
-
-        if (this.tempoUser !== 0) {
-            this.historicoUser = await API.get(`/admin_busca?matricula=${this.dataUserSearch[0].matricula}`).then((res) => {
-                return res.data
-            }).catch(() => {
-                return []
-            })
+            if(update.status) {
+                this.dataUser[0].membresia = payload.membresia
+                this.membresia = payload.membresia.split('/')[0]
+                this.isEditMembresia = false
+                this.alertCustomized('Membresia atualizada com sucesso!', '30vw')
+            } else {
+                this.alertCustomized('Não foi possível atualizar a membresia', '35vw')
+            }
+        },
+        goToAdmin() {
+            this.$router.back()
         }
 
-        this.preencheTabela()
-    }
-},
-preencheTabela() {
-    const container = this.byTag('id', "container-history");
-    const infoUser = this.byTag('id', 'infoUser')
 
-    infoUser.innerHTML = ''
+        ,async addSelect() {
+            this.users = await getAllUsers()
+            console.log(this.users)
+        },
 
-    container.innerHTML = ""; // Limpa antes de renderizar
+        async openAdmin() {
+            if (this.byTag('id', 'container-admin').style.display == 'flex') {
+                this.byTag('id', 'menu').style.display = 'flex'
+                this.byTag('id', 'container-admin').style.display = 'none'
 
-    const div2 = document.createElement("div");
-    div2.classList.add("infoUser");
-    div2.innerHTML = `
-        <strong>Nome:</strong> ${this.dataUserSearch[0].nome} <br/>
-        <strong>Matrícula:</strong> ${this.dataUserSearch[0].matricula} <br/>
-        <strong>Tempo na C11:</strong> ${this.tempoUser ? this.formatarTempo(this.tempoUser) : '00:00:00'}`
-    infoUser.appendChild(div2);
+            } else {
+                this.byTag('id', 'menu').style.display = 'none'
+                this.byTag('id', 'container-admin').style.display = 'flex'
+                await this.addSelect()
+            }
+        },
+        byTag(type, tag) {
+            if (type == 'id') {
+                return document.getElementById(tag)
+            } else if (type == 'name') {
+                return document.getElementsByName(tag)[0]
+            }
+        },
+        newCad() {
+            this.$router.push('/cadastro')
+        },
+        async buscarUser() {
 
-    if (this.dataUserSearch[0].role !== 'admin') {
-        const button = document.createElement("button")
-        button.classList.add('btn')
-        button.textContent = 'Atribuir administrador' // Use textContent para definir o texto visível
-        button.addEventListener("click", () => {
-            API.post('/admin_role', { id: this.dataUserSearch[0].id, role: 'admin' }).then(() => {
+            if (this.select !== '--') {
+                this.dataUserSearch = await getDataUserLogged(this.select)
+
+                this.tempoUser = await getHoras(this.dataUserSearch[0].id)
+
+                if (this.tempoUser !== 0) {
+                    this.historicoUser = await buscaAdmin(this.dataUserSearch[0].matricula)
+                }
+
+                this.preencheTabela()
+            }
+        },
+        preencheTabela() {
+            this.nomeUser = this.dataUserSearch[0].nome
+            this.matriculaUser = this.dataUserSearch[0].matricula
+            this.tempoUser = this.tempoUser ? this.formatarTempo(this.tempoUser) : '00:00:00'
+            this.itsAdmin = this.dataUserSearch[0].role !== 'admin'
+            this.idUserSearch = this.dataUserSearch[0].id
+        },
+        atribuirAdmin () {
+            API.post('/admin_role', { id: this.idUserSearch, role: 'admin' }).then(() => {
                 this.alertCustomized('Atribuido com sucesso!! ', '30vw')
             }).catch(() => {
                 this.alertCustomized('Não foi possível atribuir', '30vw')
             })
-        });
-        infoUser.appendChild(button);
-    }
+        },
+        dateVisual(date) {
+            const data = date.split('T')[0]
 
-    if (this.historicoUser) {
-        for (let i = 0; i < this.historicoUser.length; i++) {
-            const div = document.createElement("div");
-            div.classList.add("history-item");
-            div.innerHTML = `
-                <strong>Data:</strong>${this.dateVisual(this.historicoUser[i].data)} |
-                <strong>Tempo:</strong> ${this.formatarTempo(this.historicoUser[i].horas)} | 
-                <strong>Horário:</strong> ${this.historicoUser[i].horario}
-                <br/><br/> <strong>Descrição:</strong> ${this.historicoUser[i].descricao}`
-            container.appendChild(div);
+            const dia = data.split('-')[2]
+            const mes = data.split('-')[1]
+            const ano = data.split('-')[0]
+            return dia + '/' + mes + '/' + ano
+        },
+        formatarTempo(segundos) {
+            let horas = Math.floor(segundos / 3600);
+            let minutos = Math.floor((segundos % 3600) / 60);
+            let seg = segundos % 60;
+            return (
+                String(horas).padStart(2, '0') + ":" +
+                String(minutos).padStart(2, '0') + ":" +
+                String(seg).padStart(2, '0')
+            );
+        },
+        alertCustomized(message, size) {
+            const alert = document.getElementById('alert')
+            alert.innerHTML = ""; // Limpa antes de renderizar
+
+            alert.style.display = 'flex'
+            alert.style.width = size
+
+            const p = document.createElement("p")
+            p.classList.add("messageAlert")
+            p.innerHTML = message
+            alert.appendChild(p)
+
+            setInterval(() => {
+                alert.style.display = 'none'
+            }, 7000);
         }
-    } else {
-        container.innerHTML = ''
-    }
-},
-dateVisual(date) {
-    const data = date.split('T')[0]
-
-    const dia = data.split('-')[2]
-    const mes = data.split('-')[1]
-    const ano = data.split('-')[0]
-    return dia + '/' + mes + '/' + ano
-},
-formatarTempo(segundos) {
-    let horas = Math.floor(segundos / 3600);
-    let minutos = Math.floor((segundos % 3600) / 60);
-    let seg = segundos % 60;
-    return (
-        String(horas).padStart(2, '0') + ":" +
-        String(minutos).padStart(2, '0') + ":" +
-        String(seg).padStart(2, '0')
-    );
-},
-alertCustomized(message, size) {
-    const alert = document.getElementById('alert')
-    alert.innerHTML = ""; // Limpa antes de renderizar
-
-    alert.style.display = 'flex'
-    alert.style.width = size
-
-    const p = document.createElement("p")
-    p.classList.add("messageAlert")
-    p.innerHTML = message
-    alert.appendChild(p)
-
-    setInterval(() => {
-        alert.style.display = 'none'
-    }, 7000);
-}
     }
 }
 </script>
@@ -407,7 +361,7 @@ alertCustomized(message, size) {
 
 @media (max-width: 400px) {
 
-    #container-this.dataUser {
+    #container-dataUser {
         width: 70vw;
         left: -70vw;
     }

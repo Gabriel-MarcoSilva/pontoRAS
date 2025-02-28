@@ -61,3 +61,27 @@ export async function cadUser(payload) {
         return { status: false, error: err }
     })
 }
+
+export async function getAllUsers() {
+    return await API.get(`/usuario`).then(res => {
+        return res.data
+    }).catch((err) => {
+        return { status: false, error: err }
+    })
+}
+
+export async function getHoras(idUser) {
+    return await API.get(`/calcular?usuarioId=${idUser}`).then((res) => {
+        return res.data
+    }).catch(() => {
+        return 0
+    })
+}
+
+export async function buscaAdmin(matricula) {
+    return await API.get(`/admin_busca?matricula=${matricula}`).then((res) => {
+        return res.data
+    }).catch(() => {
+        return []
+    })
+}

@@ -26,9 +26,11 @@
             </div>
             <div class="oneLabel">
                 <label>
-                    <p>Nº Membresia: <span
-                            style="font-size: 8pt; word-wrap: break-word; overflow-wrap: break-word;">(opcional número
-                            apenas)</span></p><input v-model="membresia" autocomplete="off" value="" type="text" maxlength="8"
+                    <div>
+                        <p>Nº Membresia:</p>
+                    <span style="font-size: 8pt; word-wrap: break-word; overflow-wrap: break-word;">(opcional números apenas)</span>
+                    </div>
+                    <input v-model="membresia" autocomplete="off" value="" type="text" maxlength="8" style="width: 60%; margin-left: 5px;"
                         placeholder="Membresia (opcional)" name="membresia" @input="updateCampo('membresia')">
                 </label>
             </div>
@@ -48,7 +50,7 @@
         </form>
     </section>
 
-    <section id="openMenu" @click="openMenu()" v-if="dataUser.length > 0">🔜</section>
+    <section id="openMenu" @click="abrirMennu()" v-if="dataUser.length > 0">🔜</section>
     <section id="container-dataUser" v-if="dataUser.length > 0">
         <div id="dataUser">
             <div style="margin-bottom: 15px;" id="acessoAdmin">
@@ -85,6 +87,7 @@
 <script>
 
 import API from '@/plugins/axios';
+import { openMenu } from '@/plugins/openMenu';
 import { cadUser } from '@/services';
 
 export default {
@@ -215,36 +218,8 @@ export default {
             this.$router.back()
         },
 
-        openMenu() {
-            this.verifyScreen()
-
-            this.byTag('id', 'nameUser').innerText = this.dataUser[0].nome
-            this.byTag('id', 'cursoUser').innerText = this.dataUser[0].curso
-            this.byTag('id', 'matriculaUser').innerText = this.dataUser[0].matricula
-            this.byTag('id', 'membresiaUser').innerText = this.dataUser[0].membresia.split('/')[0]
-
-
-            if (!this.isOpen) {
-                this.byTag('id', 'container-dataUser').style.transform = `translateX(${this.widthScreen})`
-                this.byTag('id', 'openMenu').style.transform = `translateX(${this.widthScreen})`
-                this.byTag('id', 'openMenu').innerText = '🔙'
-            } else {
-                this.byTag('id', 'container-dataUser').style.transform = 'translateX(0)'
-                this.byTag('id', 'openMenu').style.transform = 'translateX(0)'
-                this.byTag('id', 'openMenu').innerText = '🔜'
-            }
-
-            this.byTag('id', 'openMenu').style.transition = '0.4s'
-            this.byTag('id', 'container-dataUser').style.transition = '0.4s'
-            this.isOpen = !this.isOpen
-        },
-
-        verifyScreen() {
-            if (window.screen.width <= 400) {
-                this.widthScreen = '70vw'
-            } else {
-                this.widthScreen = '30vw'
-            }
+        abrirMenu () {
+            this.isOpen = openMenu(this.isOpen)
         },
 
         alertCustomized(message, size) {

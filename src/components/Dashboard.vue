@@ -16,7 +16,7 @@
                 <div v-if="this.historicoUser.data?.error">
                     {{ this.historicoUser.data.error }}
                 </div>
-                <div v-else>
+                <div v-else style="width: 100%;">
                     <div class="history-item" v-for="item in historicoUser.data" :key="item">
                         <div style="display: grid; grid-template-columns: repeat(3, 33%); gap: 1%; width: 100%;">
                             <p>
@@ -51,7 +51,7 @@
         <p class="messageAlert" @key="message">{{ message }}</p>
     </section>
 
-    <section id="openMenu" @click="openMenu()">🔜</section>
+    <section id="openMenu" @click="abrirMenu()">🔜</section>
     <section id="container-dataUser">
         <div id="dataUser">
             <div style="margin-bottom: 15px;" id="acessoAdmin" v-if="isAdmin">
@@ -87,8 +87,9 @@
 <script>
 import Login from './Login.vue';
 
-import { createRouter, createWebHistory } from "vue-router";
+import { openMenu } from '@/plugins/openMenu';
 import { decodeToken } from '@/plugins/auth';
+import { createRouter, createWebHistory } from "vue-router";
 import { buscaTimeUser, getDataUserLogged, setHorario, upMembresia } from '@/services';
 
 const router = createRouter({
@@ -139,7 +140,9 @@ export default {
         this.loading()
     },
     methods: {
-// implementear: se passou de 10 hr ele olha a localização
+        abrirMenu () {
+            this.isOpen = openMenu(this.isOpen)
+        },
         async loading() {
             const verify = localStorage.getItem('token');
             if (verify) {
@@ -361,31 +364,6 @@ export default {
             });
         },
 
-        openMenu() {
-            this.verifyScreen()
-            if (!this.isOpen) {
-                document.getElementById('container-dataUser').style.transform = `translateX(${this.widthScreen})`
-                document.getElementById('openMenu').style.transform = `translateX(${this.widthScreen})`
-                document.getElementById('openMenu').innerText = '🔙'
-            } else {
-                document.getElementById('container-dataUser').style.transform = 'translateX(0)'
-                document.getElementById('openMenu').style.transform = 'translateX(0)'
-                document.getElementById('openMenu').innerText = '🔜'
-            }
-
-            document.getElementById('openMenu').style.transition = '0.4s'
-            document.getElementById('container-dataUser').style.transition = '0.4s'
-            this.isOpen = !this.isOpen
-        },
-
-        verifyScreen() {
-            if (window.screen.width <= 400) {
-                this.widthScreen = '70vw'
-            } else {
-                this.widthScreen = '30vw'
-            }
-        },
-
         openFormMembreship() {
             if (confirm('Você possui membresia?')) {
                 this.isEditMembresia = true
@@ -397,17 +375,10 @@ export default {
             document.getElementById('formMembreship').style.display = 'none'
         },
 
-        async upMembreship(e) {
-            const form = document.getElementById('formMembreship')
-
-            e.preventDefault()
-            const data = new FormData(form)
-
-            const dados = new URLSearchParams(data)
-
+        async upMembreship() {
             const payload = {
                 id: this.usuarioID,
-                membresia: [...dados.values()][0] + '/ON',
+                membresia: this.membresia + '/ON',
             }
 
             const upgrade = await upMembresia(payload)
