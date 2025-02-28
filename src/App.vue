@@ -1,6 +1,6 @@
 <template>
-<ComponentMenu />
-  <router-view />
+<ComponentMenu v-if="statusMenu" />
+  <router-view @closeMenu="statusMenu = false" @openMenu="statusMenu = true"/>
 </template>
 
 <script>
@@ -9,6 +9,11 @@ import ComponentMenu from './components/Menu.vue';
 
 export default {
   name: 'App',
+  data () {
+    return {
+        statusMenu: false
+    }
+  },
   components: {
     ComponentMenu
   }

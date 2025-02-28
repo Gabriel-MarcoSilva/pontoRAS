@@ -39,6 +39,7 @@ export default{
     components: {
         Alert
     },
+    emits: [ 'openMenu' ],
     data () {
         return {
             matricula: '',
@@ -78,6 +79,7 @@ export default{
                     const hour = new Date()
                     localStorage.setItem('timeInit', (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0' + hour.getSeconds() : hour.getSeconds()))
                 }
+                this.$emit('openMenu')
                 decodeToken()
                 this.$router.push('/inicio')
             } else {

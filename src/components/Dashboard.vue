@@ -60,6 +60,7 @@ export default {
     components: {
         Alert
     },
+    emits: ['closeMenu'],
     data () {
         return {
             nome: '',
@@ -146,6 +147,7 @@ export default {
             if (conf) {
                 this.$router.push('/login')
                 localStorage.clear()
+                this.$emit('closeMenu')
             }
         },
 
