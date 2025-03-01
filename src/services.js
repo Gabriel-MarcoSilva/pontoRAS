@@ -69,8 +69,8 @@ export async function getAllUsers() {
     })
 }
 
-export async function getHoras(idUser) {
-    return await API.get(`/calcular?usuarioId=${idUser}`).then((res) => {
+export async function getHoras(idUser, dataInicio, dataFim) {
+    return await API.get(`/calcular?usuarioId=${idUser}&dataInnicio=${dataInicio}&dataFim=${dataFim}`).then((res) => {
         return res.data
     }).catch(() => {
         return 0
@@ -99,5 +99,14 @@ export async function removeUser(id) {
         return { status: true }
     }).catch(() => {
         return { status: false }
+    })
+}
+
+export async function getUsersInPeriody(dataInicio, dataFim) {
+    return await API.get(`/horario?dataInicio=${dataInicio}&dataFim=${dataFim}`).then((res) => {
+        res.data.status = true
+        return res.data
+    }).catch((err) => {
+        return { status: false, error: err }
     })
 }

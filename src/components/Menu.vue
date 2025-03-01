@@ -76,7 +76,7 @@ export default {
                 this.isAdmin = this.dataUser[0].role === 'admin'
     
                 this.initTimer()
-                this.tempoNaC11 += Number(await getHoras(this.usuarioID))
+                this.tempoNaC11 += Number(await getHoras(this.usuarioID,'',''))
                 this.isLogged = true
             } else {
                 this.isLogged = false

@@ -1,7 +1,53 @@
 <template>
     <section class="container" id="menu" v-if="!isBusca">
         <button type="button" @click="newCad()">Cadastrar novo Membro</button>
-        <button type="button" @click="isBusca = !isBusca">buscar Usuário</button>
+        <button type="button" @click="isBusca = !isBusca">Buscar Usuário</button>
+        <button type="button" @click="() => {isBusca = !isBusca; hasPeopleinC11 = true; buscaPessoas()}">Histórico</button>
+    </section>
+
+    <section class="container" id="ontem-na-c11" v-else-if="isBusca && hasPeopleinC11">
+        <p @click="() => {isBusca = false; hasPeopleinC11 = false;}" style="cursor: pointer;"> voltar </p>
+        <h1 style="width: 100%; text-align: center;">Histórico</h1>
+        <div id="container-dates">
+            <input type="date" name="dataInicio" v-model="dataInicio" class="date">
+            <input type="date" name="dataFim" v-model="dataFim" class="date">
+            <button class="btn" @click="buscaPessoas">Buscar</button>
+        </div>
+
+        <div id="container-pessoas">
+            <div style="display: grid; grid-template-columns: 20% 49% 15% 16%; width: 100%; padding: 20px; align-items: center;">
+                <p>Matrícula</p>
+                <p>| Nome</p>
+                <p>Tempo</p>
+                <p>| Saiu</p>
+            </div>
+            <hr>
+            <div id="container-history-ontem" class="box" style="width: 100%; padding: 10px;">
+                <div v-if="this.historicoUser?.error">
+                    {{ this.historicoUser.error }}
+                </div>
+                <div v-else style="width: 100%;">
+                    <div class="history-item" v-for="item in historicoUser" :key="item">
+                        <div style="display: grid; grid-template-columns: 20% 49% 15% 16%; width: 100%; align-items: center;">
+                            <p>
+                                {{ item.matricula }}
+                            </p>
+                            <p>
+                                | {{ item.nome }}
+                            </p>
+                            <p>
+                                {{ item.horas }}
+                            </p>
+                            <p>
+                                | {{ item.horario }}
+                            </p>
+                        </div>
+                        <br />
+                        Descrição: {{ item.descricao }}
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <section class="container" id="container-admin" v-else>
@@ -34,27 +80,27 @@
         </div>
 
         <div id="container-history" class="box">
-                <div v-if="this.historicoUser?.error">
-                    {{ this.historicoUser.error }}
-                </div>
-                <div v-else style="width: 100%;">
-                    <div class="history-item" v-for="item in historicoUser" :key="item">
-                        <div style="display: grid; grid-template-columns: repeat(3, 33%); gap: 1%; width: 100%;">
-                            <p>
-                                Data: {{ item.data }}
-                            </p>
-                            <p>
-                                Tempo: {{ item.horas }}
-                            </p>
-                            <p>
-                                Horário: {{ item.horario }}
-                            </p>
-                        </div>
-                        <br />
-                        Descrição: {{ item.descricao }}
+            <div v-if="this.historicoUser?.error">
+                {{ this.historicoUser.error }}
+            </div>
+            <div v-else style="width: 100%;">
+                <div class="history-item" v-for="item in historicoUser" :key="item">
+                    <div style="display: grid; grid-template-columns: repeat(3, 33%); gap: 1%; width: 100%;">
+                        <p>
+                            Data: {{ item.data }}
+                        </p>
+                        <p>
+                            Tempo: {{ item.horas }}
+                        </p>
+                        <p>
+                            Horário: {{ item.horario }}
+                        </p>
                     </div>
+                    <br />
+                    Descrição: {{ item.descricao }}
                 </div>
             </div>
+        </div>
     </section>
 
     <Alert :message="message" :size="size" @close="this.message = ''" :key="message"/>
@@ -63,7 +109,7 @@
 
 <script>
 
-import { attAdmin, buscaAdmin, getAllUsers, getDataUserLogged, getHoras, removeUser } from '@/services';
+import { attAdmin, buscaAdmin, getAllUsers, getDataUserLogged, getHoras, getUsersInPeriody, removeUser } from '@/services';
 import Alert from './Alert.vue';
 
 export default {
@@ -92,7 +138,10 @@ export default {
             users: [],
             membresia: '',
             itsMe: false,
-            isBusca: false
+            isBusca: false,
+            hasPeopleinC11: false,
+            dataInicio: null,
+            dataFim: null
         }
     },
     async mounted() {
@@ -123,11 +172,13 @@ export default {
         },
 
         async buscarUser() {
+            this.historicoUser = []
+
             if (this.select !== '--') {
                 this.itsMe = this.select === this.usuarioID
                 this.dataUserSearch = await getDataUserLogged(this.select)
 
-                this.tempoUser = await getHoras(this.dataUserSearch[0].id)
+                this.tempoUser = await getHoras(this.dataUserSearch[0].id,'','')
 
                 if (this.tempoUser !== '00:00:00') {
                     this.historicoUser = await buscaAdmin(this.dataUserSearch[0].matricula)
@@ -141,6 +192,33 @@ export default {
 
                 this.preencheTabela()
             }
+        },
+
+        async buscaPessoas () {
+            const dateToday = new Date()
+            this.historicoUser = []
+            
+            if(!this.dataInicio && !this.dataFim) {
+                this.dataInicio = this.altDateToInput(dateToday.toLocaleDateString())
+                this.dataFim = this.dataInicio
+            }
+
+            this.historicoUser = await getUsersInPeriody(this.dataInicio, this.dataFim)
+
+            for (let i = 0; i < this.historicoUser.length; i++){
+                this.historicoUser[i].horas = await this.formatarTempo(this.historicoUser[i].horas)
+                const user = await getDataUserLogged(this.historicoUser[i].usuarioId)
+                this.historicoUser[i].nome = user[0].nome
+                this.historicoUser[i].matricula = user[0].matricula
+            }
+
+        },
+
+        altDateToInput(date) {
+            const dia = date.split('/')[0]
+            const mes = date.split('/')[1]
+            const ano = date.split('/')[2]
+            return `${ano}-${mes}-${dia}`
         },
 
         preencheTabela() {
@@ -212,7 +290,8 @@ export default {
     color: #fff;
 }
 
-#container-admin {
+#container-admin,
+#ontem-na-c11 {
     width: 80vw !important;
     height: 80vh !important;
     padding: 10px;
@@ -232,12 +311,21 @@ export default {
     box-shadow: 0 0 20px rgb(138, 43, 226);
 }
 
+#ontem-na-c11 {
+    justify-content: flex-start;
+}
+
 #menu button {
     width: 80% !important;
     margin: 20px auto;
 }
 
-#container-history {
+#container-pessoas {
+    height: 60%
+}
+
+#container-history,
+#container-history-ontem {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -247,6 +335,10 @@ export default {
     display: flex;
     height: 60%;
     justify-content: flex-start;
+}
+
+#container-history-ontem {
+    height: 100%;
 }
 
 .history-item {
@@ -268,13 +360,25 @@ export default {
     /* Transparente */
 }
 
-#select-admin {
+#select-admin,
+#container-dates input {
     width: 70%;
     padding: 5px 10px;
     font-weight: bold;
     color: rgb(138, 43, 226);
     border: 3px solid rgb(138, 43, 226);
     border-radius: 5px;
+}
+
+#container-dates {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 15px;
+}
+
+#container-dates input {
+    width: 35%;
 }
 
 .btn {

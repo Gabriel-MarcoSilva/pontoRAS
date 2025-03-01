@@ -16,6 +16,9 @@ export default {
   },
   components: {
     ComponentMenu
+  },
+  mounted () {
+      this.statusMenu = this.$route.path !== '/login'
   }
 }
 </script>
