@@ -19,7 +19,6 @@ export default {
   },
   mounted () {
     this.statusMenu = this.$route.path !== '/'
-    console.log(this.statusMenu)
   },
   methods: {
     teste () {

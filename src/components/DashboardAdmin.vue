@@ -117,6 +117,7 @@ export default {
     components: {
         Alert
     },
+    emits: ['openMenu'],
     data () {
         return {
             isOpen: false,
@@ -150,6 +151,7 @@ export default {
         this.usuarioID = dadosUser.uid
         this.membresia = dadosUser.membresia ?? ''
         this.getUsers()
+        this.$emit('openMenu')
     },
     methods: {
         closeFormMembreship() {

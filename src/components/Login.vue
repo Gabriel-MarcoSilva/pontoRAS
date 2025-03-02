@@ -39,7 +39,7 @@ export default{
     components: {
         Alert
     },
-    emits: [ 'openMenu' ],
+    emits: [ 'openMenu', 'closeMenu' ],
     data () {
         return {
             matricula: '',
@@ -50,6 +50,7 @@ export default{
     },
     mouted () {
         this.loading()
+        this.$emit('closeMenu')
     },
     methods: {
         async loading() {

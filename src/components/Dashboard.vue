@@ -60,7 +60,7 @@ export default {
     components: {
         Alert
     },
-    emits: ['closeMenu'],
+    emits: ['closeMenu', 'openMenu'],
     data () {
         return {
             nome: '',
@@ -98,7 +98,8 @@ export default {
         this.dados = await decodeToken()
         this.usuarioID = this.dados.uid
         this.nome = this.dados.nome
-
+        
+        this.$emit('openMenu')
         this.loading()
     },
     methods: {
