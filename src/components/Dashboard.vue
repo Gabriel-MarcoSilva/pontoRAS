@@ -247,7 +247,7 @@ export default {
 
             const horaAtual = Number(hour.toLocaleTimeString().split(':')[0])
 
-            if (horaAtual > 22) {
+            if (horaAtual > 21) {
                 this.message = 'Horario fora do expediente'
                 this.size = 20
                 this.segundos = 0
