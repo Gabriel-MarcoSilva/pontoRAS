@@ -6,7 +6,7 @@
     </section>
 
     <section class="container" id="ontem-na-c11" v-else-if="isBusca && hasPeopleinC11">
-        <p @click="() => {isBusca = false; hasPeopleinC11 = false; historicoUser = []}" style="cursor: pointer;"> voltar </p>
+        <p @click="() => {isBusca = false; hasPeopleinC11 = false;}" style="cursor: pointer;"> voltar </p>
         <h1 style="width: 100%; text-align: center;">Histórico</h1>
         <div id="container-dates">
             <input type="date" name="dataInicio" v-model="dataInicio" class="date">
@@ -23,11 +23,11 @@
             </div>
             <hr>
             <div id="container-history-ontem" class="box" style="width: 100%; padding: 10px;">
-                <div v-if="this.historicoUser?.error">
-                    {{ this.historicoUser.error }}
+                <div v-if="this.historico?.error">
+                    {{ this.historico.error }}
                 </div>
                 <div v-else style="width: 100%;">
-                    <div class="history-item" v-for="item in historicoUser" :key="item">
+                    <div class="history-item" v-for="item in historico" :key="item">
                         <div class="dados">
                             <p>
                                 {{ item.matricula }}
@@ -51,7 +51,7 @@
     </section>
 
     <section class="container" id="container-admin" v-else>
-        <a @click="() => {isBusca = !isBusca; historicoUser = []}" class="setas"
+        <a @click="() => {isBusca = !isBusca;}" class="setas"
             style="justify-content: flex-start !important; cursor: pointer; margin-left: 5px;">voltar</a>
 
         <div style="width: 100%; display: flex; align-items: center; justify-content: space-around; height: 20%;">
@@ -123,6 +123,7 @@ export default {
             dataUser: [],
             widthScreen: 0,
             usuarioID: '',
+            historico: [],
             historicoUser: [],
             dataUserSearch: [],
             
@@ -172,8 +173,6 @@ export default {
         },
 
         async buscarUser() {
-            this.historicoUser = []
-
             if (this.select !== '--') {
                 this.itsMe = this.select === this.usuarioID
                 this.dataUserSearch = await getDataUserLogged(this.select)
@@ -196,20 +195,20 @@ export default {
 
         async buscaPessoas () {
             const dateToday = new Date()
-            this.historicoUser = []
+            this.historico = []
             
             if(!this.dataInicio && !this.dataFim) {
                 this.dataInicio = this.altDateToInput(dateToday.toLocaleDateString())
                 this.dataFim = this.dataInicio
             }
 
-            this.historicoUser = await getUsersInPeriody(this.dataInicio, this.dataFim)
+            this.historico = await getUsersInPeriody(this.dataInicio, this.dataFim)
 
-            for (let i = 0; i < this.historicoUser.length; i++){
-                this.historicoUser[i].horas = await this.formatarTempo(this.historicoUser[i].horas)
-                const user = await getDataUserLogged(this.historicoUser[i].usuarioId)
-                this.historicoUser[i].nome = user[0].nome
-                this.historicoUser[i].matricula = user[0].matricula
+            for (let i = 0; i < this.historico.length; i++){
+                this.historico[i].horas = await this.formatarTempo(this.historico[i].horas)
+                const user = await getDataUserLogged(this.historico[i].usuarioId)
+                this.historico[i].nome = user[0].nome
+                this.historico[i].matricula = user[0].matricula
             }
 
         },

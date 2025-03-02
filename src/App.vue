@@ -1,6 +1,6 @@
 <template>
 <ComponentMenu v-if="statusMenu" />
-  <router-view @closeMenu="statusMenu = false" @openMenu="statusMenu = true"/>
+  <router-view @closeMenu="statusMenu = false" @openMenu="teste"/>
 </template>
 
 <script>
@@ -18,7 +18,13 @@ export default {
     ComponentMenu
   },
   mounted () {
-      this.statusMenu = this.$route.path !== '/login'
+    this.statusMenu = this.$route.path !== '/'
+    console.log(this.statusMenu)
+  },
+  methods: {
+    teste () {
+        this.statusMenu = true
+    }
   }
 }
 </script>
