@@ -6,7 +6,7 @@
     </section>
 
     <section class="container" id="ontem-na-c11" v-else-if="isBusca && hasPeopleinC11">
-        <p @click="() => {isBusca = false; hasPeopleinC11 = false;}" style="cursor: pointer;"> voltar </p>
+        <p @click="() => {isBusca = false; hasPeopleinC11 = false; historicoUser = []}" style="cursor: pointer;"> voltar </p>
         <h1 style="width: 100%; text-align: center;">Histórico</h1>
         <div id="container-dates">
             <input type="date" name="dataInicio" v-model="dataInicio" class="date">
@@ -15,7 +15,7 @@
         </div>
 
         <div id="container-pessoas">
-            <div style="display: grid; grid-template-columns: 20% 49% 15% 16%; width: 100%; padding: 20px; align-items: center;">
+            <div class="dados">
                 <p>Matrícula</p>
                 <p>| Nome</p>
                 <p>Tempo</p>
@@ -28,7 +28,7 @@
                 </div>
                 <div v-else style="width: 100%;">
                     <div class="history-item" v-for="item in historicoUser" :key="item">
-                        <div style="display: grid; grid-template-columns: 20% 49% 15% 16%; width: 100%; align-items: center;">
+                        <div class="dados">
                             <p>
                                 {{ item.matricula }}
                             </p>
@@ -51,7 +51,7 @@
     </section>
 
     <section class="container" id="container-admin" v-else>
-        <a @click="isBusca = !isBusca" class="setas"
+        <a @click="() => {isBusca = !isBusca; historicoUser = []}" class="setas"
             style="justify-content: flex-start !important; cursor: pointer; margin-left: 5px;">voltar</a>
 
         <div style="width: 100%; display: flex; align-items: center; justify-content: space-around; height: 20%;">
@@ -415,7 +415,11 @@ export default {
 
 .container-button button{
     width: 100%;
-}   
+}
+
+.dados {
+    display: grid; grid-template-columns: 20% 49% 15% 16%; width: 100%; align-items: center;
+}
 
 @media (max-width: 400px) {
 
@@ -445,6 +449,10 @@ export default {
 
     .history-item {
         font-size: 10pt !important;
+    }
+
+    .dados {
+        grid-template-columns: repeat(2, 50%)
     }
 }
 
