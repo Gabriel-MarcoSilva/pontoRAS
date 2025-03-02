@@ -149,7 +149,7 @@ export default {
         logout() {
             const conf = this.segundos > 0 ? confirm('Deseja sair mesmo? Se sair agora seu progresso será perdido') : true
             if (conf) {
-                this.$router.push('/login')
+                this.$router.push('/pontoRAS/login')
                 localStorage.clear()
                 this.$emit('closeMenu')
             }
@@ -368,7 +368,7 @@ export default {
         },
 
         goToAdmin() {
-            this.$router.push('/dashboard-admin')
+            this.$router.push('/pontoRAS/dashboard-admin')
         },
 
         newCad () {

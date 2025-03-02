@@ -168,7 +168,7 @@ export default {
         },
         
         newCad() {
-            this.$router.push('/cadastro')
+            this.$router.push('/pontoRAS/cadastro')
         },
 
         async buscarUser() {

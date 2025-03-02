@@ -60,7 +60,7 @@ export default{
                 document.getElementById('formLogin').reset()
                 localStorage.clear()
             } else {
-                this.$router.push('/inicio');
+                this.$router.push('/pontoRAS/inicio');
             }
         },
 
@@ -82,7 +82,7 @@ export default{
                 }
                 this.$emit('openMenu')
                 decodeToken()
-                this.$router.push('/inicio')
+                this.$router.push('/pontoRAS/inicio')
             } else {
                 this.message = 'Matrícula e/ou senha incorretas'
                 this.size = 20
@@ -90,7 +90,7 @@ export default{
         },
 
         newCad() {
-            this.$router.push('/cadastro')
+            this.$router.push('/pontoRAS/cadastro')
         }
     }
 }
