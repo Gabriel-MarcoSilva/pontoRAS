@@ -250,12 +250,12 @@ export default {
             if (horaAtual > 22) {
                 this.message = 'Horario fora do expediente'
                 this.size = 20
-                this.segundos = '00:00:00'
+                this.segundos = 0
                 this.rodando = false
             } else if (hour.toLocaleDateString().split('/')[0] !== dataInit.split('/')[0]) {
                 this.message = 'Horário não cadastrado, Dr. Who'
                 this.size = 20
-                this.segundos = '00:00:00'
+                this.segundos = 0
                 this.rodando = false
             } else {
                 const cadHorario = await setHorario(payload)
