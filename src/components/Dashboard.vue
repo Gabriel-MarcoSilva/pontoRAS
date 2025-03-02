@@ -104,7 +104,11 @@ export default {
     methods: {
         async loading() {
             const verify = localStorage.getItem('token');
-            if (verify) {
+            const dataIni = localStorage.getItem('dataInit')
+
+            const hour = new Date()
+
+            if (verify && (hour.toLocaleDateString().split('/')[0] === dataIni.split('/')[0])) {
                 this.initTimer();
                 await this.getDate();
             }
@@ -232,31 +236,43 @@ export default {
 
         async marcarHorario() {
             const hour = new Date()
+            const dataInit = localStorage.getItem('dataInit')
 
             const payload = {
-                horas: this.segundos,
-                horario: (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0' + hour.getSeconds() : hour.getSeconds()),
+                horas: this.segundos >= 36000 ? 36000 : this.segundos,
+                horario: hour.toLocaleTimeString(),
                 descricao: this.descricao,
                 usuarioId: this.usuarioID
             }
 
-            const cadHorario = await setHorario(payload)
+            const horaAtual = Number(hour.toLocaleTimeString().split(':')[0])
 
-            if (cadHorario) {
-                localStorage.setItem('timeInit', payload.horario)
-                this.disableButton(true)
-
-                this.message = 'Registrado com sucesso!'
-                this.size = 30
-
-                this.fecharPopUp()
-                this.resetar()
-                this.descricao = ''
-                this.loading()
+            if (horaAtual > 22) {
+                this.message = 'Horario fora do expediente'
+                this.size = 20
+            } else if (hour.toLocaleDateString().split('/')[0] !== dataInit.split('/')[0]) {
+                this.message = 'Horário não cadastrado, hoje não é ontem'
+                this.size = 20
             } else {
-                this.message = 'Coloque uma descrição'
-                this.size = 30
+                const cadHorario = await setHorario(payload)
+    
+                if (cadHorario) {
+                    localStorage.setItem('timeInit', payload.horario)
+                    this.disableButton(true)
+    
+                    this.message = 'Registrado com sucesso!'
+                    this.size = 30
+    
+                    this.fecharPopUp()
+                    this.resetar()
+                    this.descricao = ''
+                    this.loading()
+                } else {
+                    this.message = 'Coloque uma descrição'
+                    this.size = 30
+                }
             }
+
         },
 
         disableButton (status) {

@@ -77,7 +77,8 @@ export default{
                 const horarioMarcado = localStorage.getItem('timeInit')
                 if (horarioMarcado !== null || horarioMarcado !== undefined) {
                     const hour = new Date()
-                    localStorage.setItem('timeInit', (hour.getHours() < 10 ? '0' + hour.getHours() : hour.getHours()) + ':' + (hour.getMinutes() < 10 ? '0' + hour.getMinutes() : hour.getMinutes()) + ':' + (hour.getSeconds() < 10 ? '0' + hour.getSeconds() : hour.getSeconds()))
+                    localStorage.setItem('timeInit', hour.toLocaleTimeString())
+                    localStorage.setItem('dataInit', hour.toLocaleDateString())
                 }
                 this.$emit('openMenu')
                 decodeToken()
