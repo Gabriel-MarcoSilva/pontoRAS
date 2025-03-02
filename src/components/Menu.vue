@@ -183,7 +183,7 @@ export default {
 
         goToAdmin(route) {
             this.openMenu()
-            this.$router.push('/pontoRAS/' + route)
+            this.$router.push(route)
         }
 
     }
