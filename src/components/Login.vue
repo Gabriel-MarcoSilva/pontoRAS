@@ -1,7 +1,7 @@
 <template>
     <section class="container" id="login">
         <div>
-            <a @click="newCad()" class="setas">sig in</a>
+            <a @click="newCad()" class="setas">sign up</a>
         </div>
         <form id="formLogin" method='get' @submit.prevent="login()">
             <div>
