@@ -107,15 +107,20 @@ export default {
             const verify = localStorage.getItem('token');
             const dataIni = localStorage.getItem('dataInit')
 
-            const hour = new Date()
+            this.getLocation()
+            this.initTimer()
 
-            if (verify && (hour.toLocaleDateString().split('/')[0] === dataIni.split('/')[0])) {
-                this.initTimer();
-                await this.getDate();
+            if (this.local) {
+                const hour = new Date()
+    
+                if (verify && (hour.toLocaleDateString().split('/')[0] === dataIni.split('/')[0]) && this.local) {
+                    await this.getDate();
+                }
+
+                this.dataUser = await getDataUserLogged(this.usuarioID)
+                this.isAdmin = this.dataUser[0].role === 'admin'
             }
 
-            this.dataUser = await getDataUserLogged(this.usuarioID)
-            this.isAdmin = this.dataUser[0].role === 'admin'
         },
 
         async loading2() {
@@ -285,11 +290,16 @@ export default {
         },
 
         finishTimer() {
-            if (this.segundos > 180) {
-                this.isOpenPopUp = true
+            if (!this.local) {
+                this.message = 'Dr. Estranho, volte para a C11'
+                this.size = 30
             } else {
-                this.message = 'Horário não cadastrado. Você ficou pouco tempo na C11'
-                this.size = 60
+                if (this.segundos > 180) {
+                    this.isOpenPopUp = true
+                } else {
+                    this.message = 'Horário não cadastrado. Você ficou pouco tempo na C11'
+                    this.size = 60
+                }
             }
         },
 
@@ -309,31 +319,23 @@ export default {
             this.disabledButtonHorario = this.descricao === ''
         },
 
-        async obterLocalizacao() {
-            return new Promise((resolve, reject) => {
-                if ("geolocation" in navigator) {
-                    navigator.geolocation.getCurrentPosition(
-                            function (posicao) {
-                            const latitude = posicao.coords.latitude;
-                            const longitude = posicao.coords.longitude;
+        getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(this.checkLocation);
+            } else {
+                alert("Geolocalização não é suportada pelo seu navegador.");
+            }
+        },
 
-                            this.deltaLatitude = Math.abs(Math.abs(latitude) - 12.656981);
-                            this.deltaLongitude = Math.abs(Math.abs(longitude) - 39.094652);
+        checkLocation(position) {
+            const userLat = position.coords.latitude;
+            const userLon = position.coords.longitude;
+            const targetLat = -12.656981;
+            const targetLon = -39.094652;
+            const tolerance = 0.1; // Margem de erro para comparação
 
-                            resolve(); // Finaliza a Promise quando a localização é obtida
-                        },
-                        function(erro) {
-                            this.message = "Erro ao obter localização"
-                            this.size = 30
-                            reject(erro);
-                        }
-                    );
-                } else {
-                    this.message = "Geolocalização não é suportada neste navegador."
-                    this.size = 40
-                    reject(new Error("Geolocalização não suportada"));
-                }
-            });
+            this.local = (Math.abs(userLat - targetLat) <= tolerance && Math.abs(userLon - targetLon) <= tolerance)
+            console.log(this.local)
         },
 
         openFormMembreship() {
