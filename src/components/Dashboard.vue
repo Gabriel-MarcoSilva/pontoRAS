@@ -108,9 +108,9 @@ export default {
             const dataIni = localStorage.getItem('dataInit')
 
             this.getLocation()
-            this.initTimer()
-
+            
             if (this.local) {
+                this.initTimer()
                 const hour = new Date()
     
                 if (verify && (hour.toLocaleDateString().split('/')[0] === dataIni.split('/')[0]) && this.local) {
@@ -335,7 +335,6 @@ export default {
             const tolerance = 0.1; // Margem de erro para comparação
 
             this.local = (Math.abs(userLat - targetLat) <= tolerance && Math.abs(userLon - targetLon) <= tolerance)
-            console.log(this.local)
         },
 
         openFormMembreship() {
