@@ -1,7 +1,14 @@
 <template>
     <section class="container">
+        <div id="reload" @click="loading">
+            <v-tooltip text="Reiniciar a página">
+                <template v-slot:activator="{ props }">
+                    <v-icon v-bind="props">mdi-reload</v-icon>
+                </template>
+            </v-tooltip>
+        </div>
         <div style="display: flex; width: 100%; justify-content: flex-end; cursor: pointer;">
-            <a @click="logout()"><v-icon>mdi-logout</v-icon></a>
+            <a @click="logout"><v-icon>mdi-logout</v-icon></a>
         </div>
         <h1>Ponto RAS</h1>
         <div id="timer">
@@ -225,7 +232,12 @@ export default {
 
             if (horaAtual > 21) {
                 this.message = 'Horario fora do expediente'
-                this.size = 20
+                this.size = 30
+                this.segundos = 0
+                this.rodando = false
+            } else if (horaAtual < 7) {
+                this.message = 'Horário fora do expediente'
+                this.size = 30
                 this.segundos = 0
                 this.rodando = false
             } else if (hour.toLocaleDateString().split('/')[0] !== dataInit.split('/')[0]) {
@@ -458,6 +470,7 @@ export default {
 
 textarea {
     padding: 10px;
+    background-color: #fff;
 }
 
 #container-history {
@@ -487,6 +500,19 @@ textarea {
 .history-item:nth-child(odd) {
     background-color: transparent;
     /* Transparente */
+}
+
+#reload {
+    background-color: #1b1b1b;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+    color: #fff;
+    position: fixed;
+    bottom: 5vh;
+    right: 3vw;
+    z-index: 1;
 }
 
 @media (max-width: 400px) {

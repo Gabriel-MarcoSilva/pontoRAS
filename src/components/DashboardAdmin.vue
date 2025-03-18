@@ -86,7 +86,7 @@
             </div>
             <div class="container-button" v-if="nomeUser !== ''">
                 <button @click="atribuirAdmin" class="btn" v-if="itsAdmin">
-                    virar Admin
+                    Tornar Admin
                 </button>
                 <button @click="removerUsuario" class="btn" v-if="!itsMe">
                     Remover
