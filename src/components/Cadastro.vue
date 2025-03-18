@@ -1,6 +1,6 @@
 <template>
     <section class="container" id="cadastro">
-        <a @click="newCad()" class="setas" style="justify-content: flex-start !important; cursor: pointer;">voltar</a>
+        <a @click="newCad()" class="setas" style="justify-content: flex-start !important; cursor: pointer;"><v-icon>mdi-arrow-left-bold</v-icon></a>
         <form id="formCadastro" @submit.prevent="cadastro()">
             <div class="doubleInput">
                 <label>

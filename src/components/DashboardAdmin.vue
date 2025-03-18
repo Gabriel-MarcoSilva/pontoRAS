@@ -1,12 +1,27 @@
 <template>
     <section class="container" id="menu" v-if="!isBusca">
-        <button type="button" @click="newCad()">Cadastrar novo Membro</button>
-        <button type="button" @click="isBusca = !isBusca">Buscar Usuário</button>
-        <button type="button" @click="() => {isBusca = !isBusca; hasPeopleinC11 = true; buscaPessoas()}">Histórico</button>
+        <button type="button" class="btn-dashboard" @click="newCad()">
+            <span>
+                <v-icon>mdi-account-multiple-plus</v-icon>
+            </span>
+            <p>Cadastrar usuário</p>
+        </button>
+        <button type="button" class="btn-dashboard" @click="isBusca = !isBusca">
+            <span>
+                <v-icon>mdi-account-search</v-icon>
+            </span>
+            <p>Buscar Usuário</p>
+        </button>
+        <button type="button" class="btn-dashboard" @click="() => {isBusca = !isBusca; hasPeopleinC11 = true; buscaPessoas()}">
+            <span>
+                <v-icon>mdi-folder-search</v-icon>
+            </span>
+            <p>Histórico</p>
+        </button>
     </section>
 
     <section class="container" id="ontem-na-c11" v-else-if="isBusca && hasPeopleinC11">
-        <p @click="() => {isBusca = false; hasPeopleinC11 = false;}" style="cursor: pointer;"> voltar </p>
+        <p @click="() => {isBusca = false; hasPeopleinC11 = false;}" style="cursor: pointer;"> <v-icon>mdi-arrow-left-bold</v-icon> </p>
         <h1 style="width: 100%; text-align: center;">Histórico</h1>
         <div id="container-dates">
             <input type="date" name="dataInicio" v-model="dataInicio" class="date">
@@ -52,10 +67,10 @@
 
     <section class="container" id="container-admin" v-else>
         <a @click="() => {isBusca = !isBusca;}" class="setas"
-            style="justify-content: flex-start !important; cursor: pointer; margin-left: 5px;">voltar</a>
+            style="justify-content: flex-start !important; cursor: pointer; margin-left: 5px;"><v-icon>mdi-arrow-left-bold</v-icon></a>
 
         <div style="width: 100%; display: flex; align-items: center; justify-content: space-around; height: 20%;">
-            <select v-model="select" name="select" id="select-admin">
+            <select v-model="select" name="select" id="select-admin" style="cursor: pointer;">
                 <option value="--" disabled>Selecione um usuário</option>
                 <option v-for="item in users" :key="item" :value="item.id">{{ item.nome }}</option>
             </select>
@@ -200,11 +215,12 @@ export default {
             this.historico = []
             
             if(!this.dataInicio && !this.dataFim) {
-                this.dataInicio = this.altDateToInput(dateToday.toLocaleDateString())
-                this.dataFim = this.dataInicio
+                this.dataInicio = `${dateToday.getFullYear()}-${(dateToday.getMonth() + 1) < 10? '0' + (dateToday.getMonth() + 1) : dateToday.getMonth() + 1}-01`
+                this.dataFim = this.altDateToInput(dateToday.toLocaleDateString())
             }
 
             this.historico = await getUsersInPeriody(this.dataInicio, this.dataFim)
+            console.log(this.historico)
 
             for (let i = 0; i < this.historico.length; i++){
                 this.historico[i].horas = await this.formatarTempo(this.historico[i].horas)
@@ -420,6 +436,18 @@ export default {
 
 .dados {
     display: grid; grid-template-columns: 20% 49% 15% 16%; width: 100%; align-items: center;
+}
+
+.btn-dashboard {
+    display: grid;
+    grid-template-columns: 20% 79%;
+    grid-gap: 1%;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-dashboard p{
+    text-align: start;
 }
 
 @media (max-width: 400px) {

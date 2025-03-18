@@ -103,6 +103,8 @@ export async function removeUser(id) {
 }
 
 export async function getUsersInPeriody(dataInicio, dataFim) {
+    console.log(dataFim)
+    console.log(dataInicio)
     return await API.get(`/horario?dataInicio=${dataInicio}&dataFim=${dataFim}`).then((res) => {
         res.data.status = true
         return res.data

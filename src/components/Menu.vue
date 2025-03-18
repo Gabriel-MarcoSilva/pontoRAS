@@ -1,6 +1,9 @@
 <template>
     <section id="container-dataUser" v-if="isLogged">
-        <section id="openMenu" @click="openMenu">🔜</section>
+        <section id="openMenu" @click="openMenu">
+            <v-icon v-if="!isOpen">mdi-arrow-right-bold</v-icon>
+            <v-icon v-else>mdi-arrow-left-bold</v-icon>
+        </section>
         <div id="dataUser">
             <div style="margin-bottom: 15px;" id="acessoAdmin" v-if="isAdmin">
                 <hr>
@@ -20,7 +23,7 @@
                 <div style="height: 8vh;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <p>Nº Membresia: <span id="membresiaUser">{{ item.membresia.split('/')[0] }}</span></p>
-                        <button @click="openFormMembreship()" id="upMembreship">🖋️</button>
+                        <button @click="openFormMembreship()" id="upMembreship"><v-icon>mdi-pencil</v-icon></button>
                     </div>
                     <form method="get" @submit.prevent="upMembreship()" id="formMembreship" v-if="isEditMembresia">
                         <input v-model="membresia" type="text" name="mebresia" maxlength="8">
@@ -131,12 +134,9 @@ export default {
             if (!this.isOpen) {
                 document.getElementById('container-dataUser').style.transform = `translateX(${this.widthScreen}vw)`
                 document.getElementById('openMenu').style.transform = `translateX(0vw)`
-
-                document.getElementById('openMenu').innerText = '🔙'
             } else {
                 document.getElementById('container-dataUser').style.transform = 'translateX(0)'
                 document.getElementById('openMenu').style.transform = 'translateX(0)'
-                document.getElementById('openMenu').innerText = '🔜'
             }
 
             document.getElementById('openMenu').style.transition = '0.4s'
@@ -213,7 +213,7 @@ export default {
     height: 50px;
     margin: auto;
     display: flex;
-    z-index: 1;
+    z-index: 1000 !important;
     align-items: center;
     justify-content: center;
     cursor: pointer;
@@ -247,12 +247,14 @@ export default {
 
 #upMembreship {
     border: none;
+    color: #fff;
     padding: 0;
     background-color: transparent;
     cursor: pointer;
 }
 
 #upMembreship:hover {
+    color: rgb(138, 43, 226);
     filter: drop-shadow(0 0 15px rgb(138, 43, 226));
     font-size: 12pt;
 }

@@ -1,8 +1,7 @@
 <template>
     <section class="container">
-        <div style="display: flex; width: 100%; justify-content: space-between; cursor: pointer;">
-            <a @click="loading()">🔄</a>
-            <a @click="logout()">Sair</a>
+        <div style="display: flex; width: 100%; justify-content: flex-end; cursor: pointer;">
+            <a @click="logout()"><v-icon>mdi-logout</v-icon></a>
         </div>
         <h1>Ponto RAS</h1>
         <div id="timer">
@@ -38,7 +37,7 @@
         <div id="afazeres" v-if="isOpenPopUp">
             <form method="get" @submit.prevent="marcarHorario()" id="formHorario">
                 <p>O que você fez durante seuexpediente?</p>
-                <textarea @keyup="habilityButton()" v-model="descricao" name="afazer" id="afazer" rows="6" cols="30"></textarea>
+                <textarea @keyup="habilityButton()" v-model="descricao" style="background-color: #fff;" name="afazer" id="afazer" rows="6" cols="30"></textarea>
                 <div class="container-button">
                     <button type="submit" id="btnMarcarHorario" @disabled="disabledButtonHorario">enviar</button>
                     <button @click="fecharPopUp()" type="button">cancelar</button>
@@ -75,7 +74,7 @@ export default {
             tempoNaC11: 0,
             auxTempoC11: '',
 
-            local: '',
+            local: false,
             deltaLatitude: 0,
             deltaLongitude: 0,
 
@@ -100,6 +99,7 @@ export default {
         this.nome = this.dados.nome
         
         this.$emit('openMenu')
+        this.local = await this.getLocation()
         this.loading()
     },
     methods: {
@@ -107,49 +107,20 @@ export default {
             const verify = localStorage.getItem('token');
             const dataIni = localStorage.getItem('dataInit')
 
-            this.getLocation()
-            
             if (this.local) {
                 this.initTimer()
                 const hour = new Date()
     
-                if (verify && (hour.toLocaleDateString().split('/')[0] === dataIni.split('/')[0]) && this.local) {
+                if (verify && (hour.toLocaleDateString().split('/')[0] === dataIni.split('/')[0])) {
                     await this.getDate();
                 }
-
-                this.dataUser = await getDataUserLogged(this.usuarioID)
-                this.isAdmin = this.dataUser[0].role === 'admin'
+            } else {
+                this.message = 'Você não está na C11'
+                this.size = 30
             }
 
-        },
-
-        async loading2() {
-            try {
-                await this.obterLocalizacao(); // Aguarda a localização antes de continuar
-                const verify = localStorage.getItem('token');
-
-                // Verifica se está dentro da margem de erro (ajuste se necessário)
-                const margemErro = 0.01; // Ajuste esse valor conforme necessário
-                this.local = this.deltaLatitude < margemErro && this.deltaLongitude < margemErro;
-
-                if (this.local) {
-                    this.disableButton(false);
-                    if (!localStorage.getItem('timeInit')) {
-                        localStorage.setItem('timeInit', (this.dataControle.getHours() < 10 ? '0' + this.dataControle.getHours() : this.dataControle.getHours()) + ':' + (this.dataControle.getMinutes() < 10 ? '0' + this.dataControle.getMinutes() : this.dataControle.getMinutes()) + ':' + (this.dataControle.getSeconds() < 10 ? '0' + this.dataControle.getSeconds() : this.dataControle.getSeconds()))
-                    }
-                    if (verify) {
-                        this.initTimer();
-                        await this.getDate();
-                    }
-                } else {
-                    await this.getDate();
-                    this.disableButton(true);
-                    this.atualizarDisplay();
-                }
-
-            } catch (error) {
-                return null
-            }
+            this.dataUser = await getDataUserLogged(this.usuarioID)
+            this.isAdmin = this.dataUser[0].role === 'admin'
         },
 
         logout() {
@@ -182,7 +153,6 @@ export default {
 
             this.historicoUser = await buscaTimeUser(this.usuarioID)
 
-            
             if (this.historicoUser.status) {
                 for (let i = 0; i < this.historicoUser.data.length; i++) {
                     this.tempoNaC11 += this.historicoUser.data[i].horas
@@ -198,7 +168,7 @@ export default {
             }
         },
 
-        dateVisual(date) {
+        async dateVisual(date) {
             const data = date.split('T')[0]
 
             const dia = data.split('-')[2]
@@ -207,7 +177,7 @@ export default {
             return dia + '/' + mes + '/' + ano
         },
 
-        formatDate (date) {
+        async formatDate (date) {
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, "0");
             const day = String(date.getDate()).padStart(2, "0");
@@ -319,12 +289,17 @@ export default {
             this.disabledButtonHorario = this.descricao === ''
         },
 
-        getLocation() {
+        async getLocation() {
+            return new Promise((resolve, reject) => {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(this.checkLocation);
+                navigator.geolocation.getCurrentPosition(
+                (position) => resolve(this.checkLocation(position)),
+                (error) => reject(error)
+                );
             } else {
-                alert("Geolocalização não é suportada pelo seu navegador.");
+                reject("Geolocalização não suportada");
             }
+            });
         },
 
         checkLocation(position) {
@@ -334,7 +309,10 @@ export default {
             const targetLon = -39.094652;
             const tolerance = 0.1; // Margem de erro para comparação
 
-            this.local = (Math.abs(userLat - targetLat) <= tolerance && Math.abs(userLon - targetLon) <= tolerance)
+            return (
+            Math.abs(userLat - targetLat) <= tolerance &&
+            Math.abs(userLon - targetLon) <= tolerance
+            );
         },
 
         openFormMembreship() {
