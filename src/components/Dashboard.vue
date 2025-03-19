@@ -43,7 +43,7 @@
         </div>
         <div id="afazeres" v-if="isOpenPopUp">
             <form method="get" @submit.prevent="marcarHorario()" id="formHorario">
-                <p>O que você fez durante seuexpediente?</p>
+                <p>O que você fez durante seu expediente?</p>
                 <textarea @keyup="habilityButton()" v-model="descricao" style="background-color: #fff;" name="afazer" id="afazer" rows="6" cols="30"></textarea>
                 <div class="container-button">
                     <button type="submit" id="btnMarcarHorario" @disabled="disabledButtonHorario">enviar</button>
