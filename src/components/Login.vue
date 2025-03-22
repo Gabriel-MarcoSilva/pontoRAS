@@ -1,8 +1,8 @@
 <template>
     <section class="container" id="login">
-        <div>
+        <!-- <div>
             <a @click="newCad()" class="setas"><v-icon>mdi-account-plus</v-icon></a>
-        </div>
+        </div> -->
         <form id="formLogin" method='get' @submit.prevent="login()">
             <div>
                 <img src="../assets/roboRAS.min.png" alt="roboRAS">
