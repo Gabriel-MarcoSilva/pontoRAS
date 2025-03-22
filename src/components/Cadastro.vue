@@ -80,15 +80,17 @@ export default {
         }
     },
     mounted() {
-        this.loading()
+        const dadosUser = JSON.parse(localStorage.getItem('dataUser')) ?? null
+        if (dadosUser) {
+            this.usuarioID = dadosUser.uid
+            this.loading()
+        } else {
+            this.$router.back()
+        }
     },
     methods: {
         async loading() {
             if (localStorage.getItem('dataUser')) {
-
-                const dadosUser = JSON.parse(localStorage.getItem('dataUser'))
-                this.usuarioID = dadosUser.uid
-    
                 this.dataUser = await API.get(`/usuario?id=${this.usuarioID}`).then(async (res) => {
                     return await res.data
                 }).catch(() => {
