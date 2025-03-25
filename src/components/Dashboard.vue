@@ -114,13 +114,14 @@ export default {
             const verify = localStorage.getItem('token');
             const dataIni = localStorage.getItem('dataInit')
 
+            const hour = new Date()
+
+            if (verify && (hour.toLocaleDateString().split('/')[0] === dataIni.split('/')[0])) {
+                await this.getDate();
+            }
+
             if (this.local) {
                 this.initTimer()
-                const hour = new Date()
-    
-                if (verify && (hour.toLocaleDateString().split('/')[0] === dataIni.split('/')[0])) {
-                    await this.getDate();
-                }
             } else {
                 this.message = 'Você não está na C11'
                 this.size = 30
@@ -242,7 +243,7 @@ export default {
                 this.rodando = false
             } else if (hour.toLocaleDateString().split('/')[0] !== dataInit.split('/')[0]) {
                 this.message = 'Horário não cadastrado, Dr. Who'
-                this.size = 20
+                this.size = 35
                 this.segundos = 0
                 this.rodando = false
             } else {
