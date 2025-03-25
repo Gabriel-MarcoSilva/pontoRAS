@@ -81,12 +81,12 @@ export default {
     },
     mounted() {
         const dadosUser = JSON.parse(localStorage.getItem('dataUser')) ?? null
-        this.usuarioID = dadosUser.uid
-        this.loading()
-        //if (dadosUser) {
-        //} else {
-        //    this.$router.back()
-        //}
+        if (dadosUser) {
+            this.usuarioID = dadosUser.uid
+            this.loading()
+        } else {
+            this.$router.back()
+        }
     },
     methods: {
         async loading() {
