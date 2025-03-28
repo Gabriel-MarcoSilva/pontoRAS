@@ -320,7 +320,7 @@ export default {
             const userLon = position.coords.longitude;
             const targetLat = -12.656981;
             const targetLon = -39.094652;
-            const tolerance = 0.0000001; // Margem de erro para comparação
+            const tolerance = 0.005; // Margem de erro para comparação
 
             return (
             Math.abs(userLat - targetLat) <= tolerance &&
