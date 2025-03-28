@@ -1,8 +1,8 @@
 <template>
     <section id="container-error">
         <img src="../assets/roboRAS.min.png" alt="robô ras">
-        <h1>Página não encontrada</h1>
-        <h3 @click="$router.push('/inicio')" class="click">clique aqui para retornar</h3>
+        <h1>Em manuntenção</h1>
+        <!--<h3 @click="$router.push('/inicio')" class="click">clique aqui para retornar</h3>-->
     </section>
 </template>
 
@@ -11,7 +11,7 @@ export default {
     name: 'ErrorComponent',
     emits: ['closeMenu'],
     mounted () {
-        this.$emit('closeMenu')
+        //this.$emit('closeMenu')
     }
 }
 </script>
