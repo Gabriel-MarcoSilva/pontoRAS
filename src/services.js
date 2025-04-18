@@ -44,8 +44,8 @@ export async function buscaTimeUser(idUser) {
     })
 }
 
-export async function upMembresia(payload) {
-    return await API.post('/upmembresia', payload).then((res) => {
+export async function upDataUser(payload) {
+    return await API.post('/dadosAtualizar', payload).then((res) => {
         res.data.status = true
         return res.data
     }).catch((err) => {
@@ -103,8 +103,6 @@ export async function removeUser(id) {
 }
 
 export async function getUsersInPeriody(dataInicio, dataFim) {
-    console.log(dataFim)
-    console.log(dataInicio)
     return await API.get(`/horario?dataInicio=${dataInicio}&dataFim=${dataFim}`).then((res) => {
         res.data.status = true
         return res.data

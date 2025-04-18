@@ -16,8 +16,8 @@
                 <hr>
                 <p>Curso: <span id="cursoUser"> {{ item.curso }}</span></p>
                 <hr>
-                <p>Matrícula: <span id="matriculaUser"> {{ item.matricula }}</span></p>
-                <hr>
+                <!-- <p>Matrícula: <span id="matriculaUser"> {{ item.matricula }}</span></p>
+                <hr> -->
                 <p>Seu tempo na C11: <span id="tempoC11"> {{ auxTempoC11 }}</span></p>
                 <hr>
                 <div style="height: 8vh;">
@@ -33,13 +33,41 @@
                 </div>
             </div>
         </div>
+        <div id="container-password" style="width: 100%;">
+            <div v-if="!openFormPassword" style="display: flex; align-items: center; justify-content: space-between;">
+                <p>Alterar senha</p>
+                <button @click="openFormPassword = true"><v-icon>mdi-pencil</v-icon></button>
+            </div>
+            <div v-else style="width: 100%;">
+                <form id="formPassword" method="get" @submit.prevent="submitPassword"
+                    style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: space-between;
+                        width: 100%;
+                        "
+                >
+                    <div style="display: flex; align-items: center; justify-content: space-around; width: 100%;">
+                        <input v-if="isEyes" type="password" v-model="novaSenha" name="senha" placeholder="insira nova senha">
+                        <input v-else type="text" v-model="novaSenha" name="senha" placeholder="insira nova senha">
+                        <div style="margin-left: 10px">
+                            <v-icon v-if="isEyes" @click="isEyes = false">mdi-eye</v-icon>
+                            <v-icon v-else @click="isEyes = true"> mdi-eye-off</v-icon>
+                        </div>
+                        <button type="submit"><v-icon>mdi-check</v-icon></button>
+                        <button @click="openFormPassword = false"><v-icon>mdi-close</v-icon></button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <Alert :message="message" :size="size" @close="this.message = ''" :key="message"/>
     </section>
 </template>
 
 <script>
-import { getDataUserLogged, getHoras, upMembresia } from '@/services';
+import { getDataUserLogged, getHoras, upDataUser } from '@/services';
 import Alert from './Alert.vue';
 
 export default {
@@ -59,6 +87,10 @@ export default {
             widthScreen: 30,
             tempoNaC11: 0,
             isLogged: false,
+
+            openFormPassword: false,
+            novaSenha: '',
+            isEyes: true,
 
             message: '',
             size: 0
@@ -161,25 +193,48 @@ export default {
             }
         },
 
+        async submitPassword() {
+            if (this.novaSenha != '') {
+                const payload = {
+                    id: this.usuarioID,
+                    senha: this.novaSenha,
+                }
+    
+                this.upData(payload)
+            }
+        },
+        
         async upMembreship() {
             const payload = {
                 id: this.usuarioID,
                 membresia: this.membresia + '/ON',
             }
 
-            const update = await upMembresia(payload)
+            this.upData(payload)
+        },
 
+        async upData (payload) {
+            const update = await upDataUser(payload)
+            
             if(update.status) {
-                this.dataUser[0].membresia = payload.membresia
-                this.membresia = payload.membresia.split('/')[0]
-                this.isEditMembresia = false
-                this.message = 'Membresia atualizada com sucesso!'
-                this.size = 30
+                if (payload.membresia) {
+                    this.dataUser[0].membresia = payload.membresia
+                    this.membresia = payload.membresia.split('/')[0]
+                    this.isEditMembresia = false
+                    this.message = 'Membresia atualizada com sucesso!'
+                    this.size = 30
+                } else if (payload.senha) {
+                    this.novaSenha = ''
+                    this.openFormPassword = false
+                    this.message = 'Senha atualizada com sucesso!'
+                    this.size = 30
+                }
             } else {
-                this.message = 'Não foi possível atualizar a membresia'
+                this.message = 'Não foi possível atualizar'
                 this.size = 35
             }
         },
+
 
         goToAdmin(route) {
             this.openMenu()
@@ -200,10 +255,14 @@ export default {
     background-color: #1b1b1b;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     padding: 10px;
     box-shadow: 5px 0px 10px rgb(138, 43, 226);
+}
+
+#container-password {
+    color: #fff;
 }
 
 #openMenu {
@@ -265,7 +324,8 @@ export default {
     align-items: center;
 }
 
-#formMembreship input {
+#formMembreship input,
+#formPassword input {
     height: 6vh;
     width: 50%;
     border-radius: 5px;
@@ -275,7 +335,8 @@ export default {
     font-weight: bold;
 }
 
-#formMembreship button {
+#formMembreship button,
+#formPassword button {
     color: rgb(138, 43, 226);
     height: 6vh;
     min-width: 20%;
@@ -286,6 +347,12 @@ export default {
     font-weight: bold;
     background-color: #1b1b1b;
     border-radius: 2px;
+}
+
+#formPassword button {
+    margin: 0 10px !important;
+    padding: 0 !important;
+    min-width: 10% !important;
 }
 
 #formMembreship button:hover {
