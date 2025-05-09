@@ -159,7 +159,7 @@ export default {
 <style scoped>
 #container-dataUser {
     position: absolute;
-    height: 100vh;
+    height: 100%;
     width: 30vw;
     left: -30vw;
     top: 0;
