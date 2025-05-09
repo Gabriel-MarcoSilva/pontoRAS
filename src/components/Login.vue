@@ -1,8 +1,8 @@
 <template>
     <section class="container" id="login">
-        <!-- <div>
+        <div>
             <a @click="newCad()" class="setas"><v-icon>mdi-account-plus</v-icon></a>
-        </div> -->
+        </div>
         <form id="formLogin" method='get' @submit.prevent="login()">
             <div>
                 <img src="../assets/roboRAS.min.png" alt="roboRAS">
@@ -98,7 +98,7 @@ export default{
 </script>
 
 <style scoped>
-    @media (max-width: 400px) {
+    @media (max-width: 500px) {
         .container {
             width: 70vw;
         }

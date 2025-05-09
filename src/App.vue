@@ -1,6 +1,6 @@
 <template>
-<ComponentMenu v-if="statusMenu" />
-  <router-view @closeMenu="statusMenu = false" @openMenu="teste"/>
+  <ComponentMenu v-if="statusMenu" :key="atualizaMenu"/>
+  <router-view @closeMenu="statusMenu = false" @openMenu="teste" @atualiza="atualizaMenu = !atualizaMenu"/>
 </template>
 
 <script>
@@ -11,7 +11,8 @@ export default {
   name: 'App',
   data () {
     return {
-        statusMenu: false
+        statusMenu: false,
+        atualizaMenu: false
     }
   },
   components: {
@@ -128,7 +129,7 @@ div .setas {
     margin-right: 5px;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 500px) {
     .oneLabel label {
         padding: 0;
         font-size: 8pt !important;

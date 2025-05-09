@@ -39,8 +39,17 @@
                     @input="updateCampo('email')">
             </label>
             <label class="oneInput">
-                <p>Senha: *</p><input v-model="senha" autocomplete="off" value="" type="password" placeholder="Senha"
-                    name="password" @input="updateCampo('password')">
+                <p>Senha: *</p>
+                    <div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
+                        <input v-if="!verSenha" v-model="senha" autocomplete="off" value="" type="password" placeholder="Senha"
+                            name="password" @input="updateCampo('password')">
+                        <input v-else v-model="senha" autocomplete="off" value="" type="text" placeholder="Senha"
+                            name="password" @input="updateCampo('password')">
+                        <div style="width: 20%; display: flex; align-items: center; justify-content: center;">
+                            <v-icon v-if="!verSenha" @click="verSenha = !verSenha" class="olho-senha">mdi-eye</v-icon>
+                            <v-icon v-if="verSenha" @click="verSenha = !verSenha" class="olho-senha">mdi-eye-off</v-icon>
+                        </div>
+                    </div>
             </label>
             <button type="submit">Cadastrar</button>
         </form>
@@ -74,19 +83,20 @@ export default {
             membresia: '',
             curso: '',
             senha: '',
+            verSenha: false,
 
             message: '',
             size: 0
         }
     },
     mounted() {
-        const dadosUser = JSON.parse(localStorage.getItem('dataUser')) ?? null
-        if (dadosUser) {
-            this.usuarioID = dadosUser.uid
-            this.loading()
-        } else {
-            this.$router.back()
-        }
+        this.loading()
+        //const dadosUser = JSON.parse(localStorage.getItem('dataUser')) ?? null
+        //this.usuarioID = dadosUser.uid
+        // if (dadosUser) {
+        // } else {
+        //     this.$router.back()
+        // }
     },
     methods: {
         async loading() {
@@ -243,7 +253,16 @@ div .setas {
     width: 97%;
 }
 
-@media (max-width: 400px) {
+.olho-senha {
+    cursor: pointer;
+    font-size: 10pt;
+}
+
+.olho-senha:hover {
+    color: #fff;
+}
+
+@media (max-width: 500px) {
     .setas{
         font-size: 8pt;
     }

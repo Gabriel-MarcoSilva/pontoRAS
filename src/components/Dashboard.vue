@@ -1,9 +1,14 @@
 <template>
     <section class="container">
-        <div id="reload" @click="loading">
+        <div id="reload">
             <v-tooltip text="Reiniciar a página">
                 <template v-slot:activator="{ props }">
-                    <v-icon v-bind="props">mdi-reload</v-icon>
+                    <v-icon v-bind="props" @click="loading">mdi-reload</v-icon>
+                </template>
+            </v-tooltip>
+            <v-tooltip text="Alterar dados">
+                <template v-slot:activator="{ props }">
+                    <v-icon v-bind="props" @click="openData = !openData" style="margin-left: 5px;">mdi-pencil</v-icon>
                 </template>
             </v-tooltip>
         </div>
@@ -52,6 +57,8 @@
             </form>
         </div>
         <Alert :message="message" :size="size" @close="this.message = ''" :key="message"/>
+        <AlteraDados v-if="openData" :key="openData" @close="openData = false" @message="atualizaMessage" />
+
     </section>
 </template>
 
@@ -60,13 +67,15 @@
 import { decodeToken } from '@/plugins/auth';
 import { buscaTimeUser, getDataUserLogged, setHorario, upMembresia } from '@/services';
 import Alert from './Alert.vue';
+import AlteraDados from './AlteraDados.vue';
 
 export default {
     name: 'ComponentDashboard',
     components: {
-        Alert
+        Alert,
+        AlteraDados
     },
-    emits: ['closeMenu', 'openMenu'],
+    emits: ['closeMenu', 'openMenu', 'atualiza'],
     data () {
         return {
             nome: '',
@@ -97,7 +106,9 @@ export default {
             isOpenPopUp: false,
             historicoUser: [],
             disabledButton: false,
-            disabledButtonHorario: false
+            disabledButtonHorario: false,
+            openData: false,
+            seeIcons: false
         }
     },
     async mounted () {
@@ -155,6 +166,13 @@ export default {
             this.tempo = this.formatarTempo(this.segundos);
             this.dias = Math.floor(this.tempoNaC11 / 86400) // para 24h
             this.auxTempoC11 = (this.dias > 0 ? this.dias.toString() + 'd ' : '') + this.formatarTempo(this.tempoNaC11 - this.dias * 86400)
+        },
+
+        atualizaMessage (info) {
+            this.message = info.message
+            this.size = info.size
+
+            this.$emit('atualiza')
         },
 
         async getDate() {
@@ -506,8 +524,9 @@ textarea {
 #reload {
     background-color: #1b1b1b;
     cursor: pointer;
+    display: flex;
     padding: 10px;
-    border-radius: 50%;
+    border-radius: 10%;
     box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
     color: #fff;
     position: fixed;
@@ -516,7 +535,7 @@ textarea {
     z-index: 1;
 }
 
-@media (max-width: 400px) {
+@media (max-width: 500px) {
 
     .container {
         width: 80vw;

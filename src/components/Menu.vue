@@ -23,42 +23,8 @@
                 <div style="height: 8vh;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <p>Nº Membresia: <span id="membresiaUser">{{ item.membresia.split('/')[0] }}</span></p>
-                        <button @click="openFormMembreship()" id="upMembreship"><v-icon>mdi-pencil</v-icon></button>
                     </div>
-                    <form method="get" @submit.prevent="upMembreship()" id="formMembreship" v-if="isEditMembresia">
-                        <input v-model="membresia" type="text" name="mebresia" maxlength="8">
-                        <button type="submit">ok</button>
-                        <button @click="isEditMembresia = false" type="button">cancelar</button>
-                    </form>
                 </div>
-            </div>
-        </div>
-        <div id="container-password" style="width: 100%;">
-            <div v-if="!openFormPassword" style="display: flex; align-items: center; justify-content: space-between;">
-                <p>Alterar senha</p>
-                <button @click="openFormPassword = true"><v-icon>mdi-pencil</v-icon></button>
-            </div>
-            <div v-else style="width: 100%;">
-                <form id="formPassword" method="get" @submit.prevent="submitPassword"
-                    style="
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: space-between;
-                        width: 100%;
-                        "
-                >
-                    <div style="display: flex; align-items: center; justify-content: space-around; width: 100%;">
-                        <input v-if="isEyes" type="password" v-model="novaSenha" name="senha" placeholder="insira nova senha">
-                        <input v-else type="text" v-model="novaSenha" name="senha" placeholder="insira nova senha">
-                        <div style="margin-left: 10px">
-                            <v-icon v-if="isEyes" @click="isEyes = false">mdi-eye</v-icon>
-                            <v-icon v-else @click="isEyes = true"> mdi-eye-off</v-icon>
-                        </div>
-                        <button type="submit"><v-icon>mdi-check</v-icon></button>
-                        <button @click="openFormPassword = false"><v-icon>mdi-close</v-icon></button>
-                    </div>
-                </form>
             </div>
         </div>
 
@@ -67,7 +33,7 @@
 </template>
 
 <script>
-import { getDataUserLogged, getHoras, upDataUser } from '@/services';
+import { getDataUserLogged, getHoras } from '@/services';
 import Alert from './Alert.vue';
 
 export default {
@@ -83,14 +49,9 @@ export default {
             usuarioID: '',
             auxTempoC11: 0,
             isAdmin: false,
-            isEditMembresia: false,
             widthScreen: 30,
             tempoNaC11: 0,
             isLogged: false,
-
-            openFormPassword: false,
-            novaSenha: '',
-            isEyes: true,
 
             message: '',
             size: 0
@@ -185,56 +146,6 @@ export default {
                 this.widthScreen = 30
             }
         },
-
-        openFormMembreship() {
-            if (confirm('Você possui membresia ativa?')) {
-                this.isEditMembresia = true
-                this.membresia = this.dataUser[0].membresia.split('/')[0]
-            }
-        },
-
-        async submitPassword() {
-            if (this.novaSenha != '') {
-                const payload = {
-                    id: this.usuarioID,
-                    senha: this.novaSenha,
-                }
-    
-                this.upData(payload)
-            }
-        },
-        
-        async upMembreship() {
-            const payload = {
-                id: this.usuarioID,
-                membresia: this.membresia + '/ON',
-            }
-
-            this.upData(payload)
-        },
-
-        async upData (payload) {
-            const update = await upDataUser(payload)
-            
-            if(update.status) {
-                if (payload.membresia) {
-                    this.dataUser[0].membresia = payload.membresia
-                    this.membresia = payload.membresia.split('/')[0]
-                    this.isEditMembresia = false
-                    this.message = 'Membresia atualizada com sucesso!'
-                    this.size = 30
-                } else if (payload.senha) {
-                    this.novaSenha = ''
-                    this.openFormPassword = false
-                    this.message = 'Senha atualizada com sucesso!'
-                    this.size = 30
-                }
-            } else {
-                this.message = 'Não foi possível atualizar'
-                this.size = 35
-            }
-        },
-
 
         goToAdmin(route) {
             this.openMenu()
@@ -361,7 +272,7 @@ export default {
     border: 3px solid #1b1b1b;
 }
 
-@media (max-width: 400px){
+@media (max-width: 500px){
     #container-dataUser {
         width: 70vw;
         left: -70vw;
