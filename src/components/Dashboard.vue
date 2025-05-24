@@ -117,11 +117,11 @@ export default {
         this.nome = this.dados.nome
         
         this.$emit('openMenu')
-        this.local = await this.getLocation()
         this.loading()
     },
     methods: {
         async loading() {
+            this.local = await this.getLocation()
             const verify = localStorage.getItem('token');
             const dataIni = localStorage.getItem('dataInit')
 
@@ -249,7 +249,7 @@ export default {
 
             const horaAtual = Number(hour.toLocaleTimeString().split(':')[0])
 
-            if (horaAtual > 21) {
+            if (horaAtual > 23) {
                 this.message = 'Horario fora do expediente'
                 this.size = 30
                 this.segundos = 0

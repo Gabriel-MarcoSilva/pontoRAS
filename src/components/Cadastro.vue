@@ -90,13 +90,13 @@ export default {
         }
     },
     mounted() {
-        this.loading()
-        //const dadosUser = JSON.parse(localStorage.getItem('dataUser')) ?? null
-        //this.usuarioID = dadosUser.uid
-        // if (dadosUser) {
-        // } else {
-        //     this.$router.back()
-        // }
+        const dadosUser = JSON.parse(localStorage.getItem('dataUser')) ?? null
+        this.usuarioID = dadosUser.uid
+         if (dadosUser) {
+            this.loading()
+         } else {
+             this.$router.back()
+         }
     },
     methods: {
         async loading() {
